@@ -9,5 +9,6 @@ npm i -g serverless-offline
 serverless plugin install -n serverless-dynamodb-local
 serverless plugin install -n serverless-offline
 sls dynamodb install
+npm install
 
 
