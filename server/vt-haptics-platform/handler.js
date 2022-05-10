@@ -2,7 +2,7 @@ const AWS = require("aws-sdk");
 
 if (process.env.IS_OFFLINE) {
     AWS.config.update({
-        region: 'us-west-1',
+        region: 'localhost',
         accessKeyId: 'xxxxxxxxxxxxxx',
         secretAccessKey: 'xxxxxxxxxxxxxx',
     });
