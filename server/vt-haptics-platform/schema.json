@@ -1,0 +1,183 @@
+{
+    "$schema": "http://json-schema.org/draft/2019-09/schema",
+    "$id": "http://example.com/example.json",
+    "type": "object",
+    "default": {},
+    "title": "Root Schema",
+    "required": [
+        "email",
+        "experiment_id",
+        "creation_datetime",
+        "experiment_description",
+        "haptic_setup"
+    ],
+    "properties": {
+        "email": {
+            "type": "string",
+            "default": "",
+            "title": "The email Schema",
+            "examples": [
+                "test@gmail.com"
+            ]
+        },
+        "experiment_id": {
+            "type": "string",
+            "default": "",
+            "title": "The experiment_id Schema",
+            "examples": [
+                "unique_id"
+            ]
+        },
+        "creation_datetime": {
+            "type": "string",
+            "default": "",
+            "title": "The creation_datetime Schema",
+            "examples": [
+                "1970-01-01T10:05:08+01:00"
+            ]
+        },
+        "experiment_description": {
+            "type": "string",
+            "default": "",
+            "title": "The experiment_description Schema",
+            "examples": [
+                "This is a short description of the experiment so that the researcher can identify and recognize the experiment, this is not shown to the participant"
+            ]
+        },
+        "haptic_setup": {
+            "type": "object",
+            "default": {},
+            "title": "The haptic_setup Schema",
+            "required": [
+                "survey_url",
+                "user_instructions",
+                "user_agreements",
+                "interaction_type",
+                "linked_files"
+            ],
+            "properties": {
+                "survey_url": {
+                    "type": "string",
+                    "default": "",
+                    "title": "The survey_url Schema",
+                    "examples": [
+                        "http://www.survey.urlformat.com"
+                    ]
+                },
+                "user_instructions": {
+                    "type": "string",
+                    "default": "",
+                    "title": "The user_instructions Schema",
+                    "examples": [
+                        "This set of instructions are shown to the users explicitly"
+                    ]
+                },
+                "user_agreements": {
+                    "type": "array",
+                    "default": [],
+                    "title": "The user_agreements Schema",
+                    "items": {
+                        "type": "string",
+                        "title": "A Schema",
+                        "examples": [
+                            "This checkbox gets consent of the users before continuing and agreement on how to proceed with the experiement",
+                            "This checkbox a particular agreement with the user",
+                            "This checkbox a another agreement with the user"
+                        ]
+                    },
+                    "examples": [
+                        ["This checkbox gets consent of the users before continuing and agreement on how to proceed with the experiement",
+                            "This checkbox a particular agreement with the user",
+                            "This checkbox a another agreement with the user"
+                        ]
+                    ]
+                },
+                "interaction_type": {
+                    "type": "string",
+                    "default": "",
+                    "title": "The interaction_type Schema",
+                    "examples": [
+                        "swipe"
+                    ]
+                },
+                "linked_files": {
+                    "type": "object",
+                    "default": {},
+                    "title": "The linked_files Schema",
+                    "required": [
+                        "long_effect",
+                        "short_effect",
+                        "instruction_image"
+                    ],
+                    "properties": {
+                        "long_effect": {
+                            "type": "string",
+                            "default": "",
+                            "title": "The long_effect Schema",
+                            "examples": [
+                                "a.haptics"
+                            ]
+                        },
+                        "short_effect": {
+                            "type": "string",
+                            "default": "",
+                            "title": "The short_effect Schema",
+                            "examples": [
+                                "b.haptics"
+                            ]
+                        },
+                        "instruction_image": {
+                            "type": "string",
+                            "default": "",
+                            "title": "The instruction_image Schema",
+                            "examples": [
+                                "c.png"
+                            ]
+                        }
+                    },
+                    "examples": [{
+                        "long_effect": "a.haptics",
+                        "short_effect": "b.haptics",
+                        "instruction_image": "c.png"
+                    }]
+                }
+            },
+            "examples": [{
+                "survey_url": "http://www.survey.urlformat.com",
+                "user_instructions": "This set of instructions are shown to the users explicitly",
+                "user_agreements": [
+                    "This checkbox gets consent of the users before continuing and agreement on how to proceed with the experiement",
+                    "This checkbox a particular agreement with the user",
+                    "This checkbox a another agreement with the user"
+                ],
+                "interaction_type": "swipe",
+                "linked_files": {
+                    "long_effect": "a.haptics",
+                    "short_effect": "b.haptics",
+                    "instruction_image": "c.png"
+                }
+            }]
+        }
+    },
+    "examples": [{
+        "email": "test@gmail.com",
+        "experiment_id": "unique_id",
+        "creation_datetime": "1970-01-01T10:05:08+01:00",
+        "experiment_description": "This is a short description of the experiment so that the researcher can identify and recognize the experiment, this is not shown to the participant",
+        "haptic_setup": {
+            "survey_url": "http://www.survey.urlformat.com",
+            "user_instructions": "This set of instructions are shown to the users explicitly",
+            "user_agreements": [
+                "This checkbox gets consent of the users before continuing and agreement on how to proceed with the experiement",
+                "This checkbox a particular agreement with the user",
+                "This checkbox a another agreement with the user"
+            ],
+            "interaction_type": "swipe",
+            "linked_files": {
+                "long_effect": "a.haptics",
+                "short_effect": "b.haptics",
+                "instruction_image": "c.png"
+            }
+        }
+    }]
+}
