@@ -10,6 +10,8 @@ custom:
       migrate: true
     stages:
       - dev
+package:
+  individually: true
 
 provider:
   name: aws
