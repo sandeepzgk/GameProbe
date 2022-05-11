@@ -25,7 +25,7 @@ const dynamoDbClient = new AWS.DynamoDB.DocumentClient(dynamoDbClientParams);
 app.use(express.json());
 
 
-app.post("/users", async function(req, res) {
+app.post("/setExperiment", async function(req, res) {
     var instance = req.body;
     var v = new Validator();
     var validation_result = v.validate(instance, web_schema)
@@ -33,10 +33,27 @@ app.post("/users", async function(req, res) {
         const params = {
             TableName: USERS_TABLE,
             Item: instance,
+
+            
         };
 
         try {
-            await dynamoDbClient.put(params).promise();
+            const getParams = {
+                TableName: USERS_TABLE,
+                Key: {
+                  email: req.body.email,
+                },
+                
+              };
+           
+            const { Item } = await dynamoDbClient.get(getParams).promise();
+            var toEdit = Item
+            toEdit.haptic_setup+=(instance.haptic_setup)
+            console.log(toEdit.haptic_setup);
+            await dynamoDbClient.put(toEdit).promise();
+            
+            res.status(200); 
+            
         } catch (error) {
             console.log(error);
             res.status(500).json({
@@ -50,7 +67,39 @@ app.post("/users", async function(req, res) {
             validation_result: validation_result.errors
         });
     }
+   
+    
+    res.end()
+    
+});
 
+app.post("/getExperiment", async function(req, res) {
+    const params = {
+        TableName: USERS_TABLE,
+        Key: {
+          email: req.body.email,
+        },
+        
+      };
+    
+      try {
+        const { Item } = await dynamoDbClient.get(params).promise();
+        
+        if (Item) {
+            
+          
+
+          res.json(Item );
+        } else {
+          res
+            .status(404)
+            .json({ error: 'Could not find user with provided "userId"' });
+        }
+      } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: "Could not retreive user" });
+      }
+    
 });
 
 app.use((req, res, next) => {

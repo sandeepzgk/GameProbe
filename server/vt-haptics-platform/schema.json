@@ -2,7 +2,6 @@
     "$schema":"http://json-schema.org/draft/2019-09/schema",
     "required":[
        "email",
-       "experiment_description",
        "haptic_setup"
     ],
     "properties":{
@@ -17,23 +16,25 @@
           "type":"string",
           "format":"date-time"
        },
-       "experiment_description":{
-          "type":"string"
-       },
-       "haptic_setup":{
+       
+       "haptic_setup":[{
           "type":"object",
           "required":[
              "survey_url",
              "user_instructions",
              "user_agreements",
              "interaction_type",
-             "linked_files"
+             "linked_files",
+             "experiment_description"
           ],
           "properties":{
              "survey_url":{
                 "type":"string",
                 "format":"uri-reference"
              },
+             "experiment_description":{
+               "type":"string"
+            },
              "user_instructions":{
                 "type":"string"
              },
@@ -78,6 +79,7 @@
                 }
              }
           }
-       }
+         
+       }]
     }
  }
