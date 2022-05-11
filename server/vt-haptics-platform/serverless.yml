@@ -42,11 +42,15 @@ resources:
       Type: AWS::DynamoDB::Table
       Properties:
         AttributeDefinitions:
+          - AttributeName: hashs
+            AttributeType: S
           - AttributeName: email
             AttributeType: S
         KeySchema:
-          - AttributeName: email
+          - AttributeName: hashs
             KeyType: HASH
+          - AttributeName: email
+            KeyType: RANGE
         BillingMode: PAY_PER_REQUEST
         TableName: ${self:custom.tableName}
     

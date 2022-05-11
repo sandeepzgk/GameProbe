@@ -9,6 +9,9 @@
           "type":"string",
           "format":"email"
        },
+       "hashs":{
+         "type":"string"
+      },
        "experiment_id":{
           "type":"string"
        },
