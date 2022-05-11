@@ -5,7 +5,18 @@ const serverless = require("serverless-http");
 
 const db_schema = require("./schema.json");
 const web_schema = require("./schema.json");
-
+const {google} = require('googleapis');
+const google_api_key ={
+    client_email: process.env.CLIENT_EMAIL,
+    private_key: process.env.PRIVATE_KEY,
+   }
+const auth = new google.auth.JWT(
+    google_api_key.client_email,
+    null,
+    google_api_key.private_key,
+    ["https://www.googleapis.com/auth/analytics.readonly"],
+    null
+);
 const app = express();
 
 const USERS_TABLE = process.env.USERS_TABLE;
@@ -24,6 +35,7 @@ const dynamoDbClient = new AWS.DynamoDB.DocumentClient(dynamoDbClientParams);
 
 app.use(express.json());
 
+google.options({auth});
 
 app.post("/setExperiment", async function(req, res) {
     var instance = req.body;
