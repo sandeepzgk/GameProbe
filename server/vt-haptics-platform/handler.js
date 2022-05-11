@@ -5,18 +5,7 @@ const serverless = require("serverless-http");
 
 const db_schema = require("./schema.json");
 const web_schema = require("./schema.json");
-const {google} = require('googleapis');
-const google_api_key ={
-    client_email: process.env.CLIENT_EMAIL,
-    private_key: process.env.PRIVATE_KEY,
-   }
-const auth = new google.auth.JWT(
-    google_api_key.client_email,
-    null,
-    google_api_key.private_key,
-    ["https://www.googleapis.com/auth/analytics.readonly"],
-    null
-);
+
 const app = express();
 
 const USERS_TABLE = process.env.USERS_TABLE;
@@ -35,34 +24,62 @@ const dynamoDbClient = new AWS.DynamoDB.DocumentClient(dynamoDbClientParams);
 
 app.use(express.json());
 
-google.options({auth});
 
 app.post("/setExperiment", async function(req, res) {
     var instance = req.body;
+    var json_ins = JSON.stringify(instance)
+    var jb = JSON.parse(json_ins)
     var v = new Validator();
     var validation_result = v.validate(instance, web_schema)
     if (validation_result.valid) {
-        const params = {
-            TableName: USERS_TABLE,
-            Item: instance,
-
-            
-        };
+        
 
         try {
             const getParams = {
                 TableName: USERS_TABLE,
-                Key: {
-                  email: req.body.email,
-                },
+                // Key: {
+                //   email: req.body.email,
+                // },
+                FilterExpression: 'email = :email ',
+                ExpressionAttributeValues: {
+                  ':email': req.body.email
+                }
                 
               };
-           
-            const { Item } = await dynamoDbClient.get(getParams).promise();
-            var toEdit = Item
-            toEdit.haptic_setup+=(instance.haptic_setup)
-            console.log(toEdit.haptic_setup);
-            await dynamoDbClient.put(toEdit).promise();
+           //console.log(48)
+            var params;
+            const Item= await dynamoDbClient.scan(getParams).promise().then(
+              data =>{ console.log(data.Count);
+              if(data.Count > 0){
+                var toEdit = data.Items[0];
+                params = {
+              
+                  TableName: USERS_TABLE,
+                    Item: instance,
+                };
+                toEdit.haptic_setup.push(instance.haptic_setup[0])
+                console.log(toEdit.haptic_setup)
+                params = {
+              
+                  TableName: USERS_TABLE,
+                    Item: toEdit,
+                };
+              }
+              else{
+                console.log(62)
+                params = {
+              
+                  TableName: USERS_TABLE,
+                    Item: instance,
+        
+                    
+                };
+                
+              }
+              }
+              );
+              await dynamoDbClient.put(params).promise();
+            
             
             res.status(200); 
             
