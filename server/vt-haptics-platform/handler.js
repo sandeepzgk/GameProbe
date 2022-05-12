@@ -19,8 +19,8 @@ String.prototype.hashCode = function() {
 }
 const dynamoDbClientParams = {};
 if (process.env.IS_OFFLINE) {
-    dynamoDbClientParams.region = "localhost"
-    dynamoDbClientParams.endpoint = "http://localhost:8000"
+    dynamoDbClientParams.region = "localhost";
+    dynamoDbClientParams.endpoint = "http://localhost:8000";
     AWS.config.update({
         region: "localhost",
         accessKeyId: "xxxxxxxxxxxxxx",
@@ -32,40 +32,34 @@ const dynamoDbClient = new AWS.DynamoDB.DocumentClient(dynamoDbClientParams);
 app.use(express.json());
 app.post("/setExperiment", async function(req, res) {
     var instance = req.body;
-    var json_ins = JSON.stringify(instance)
-    var jb = JSON.parse(json_ins)
     var v = new Validator();
-    var validation_result = v.validate(instance, web_schema)
+    var validation_result = v.validate(instance, web_schema);
     if (validation_result.valid) {
         try {
             //Todo: generate a hash with 6 bit and check theres no collision
             var hashed = false;
             while (!hashed) {
-                var email = req.body.email
-                email = email.substr(email.length - 6) //@YANG: Ask why this is getting the last 6 characters wont this be @gmail.com ? 
-                var time = String(Date.now())
-                time = time.substring(time.length - 6)
-
-                var hash = (email + time).hashCode()
+                var email = req.body.email;
+                email = email.substr(email.length - 6); //@YANG: Ask why this is getting the last 6 characters wont this be @gmail.com ? 
+                var time = String(Date.now());
+                time = time.substring(time.length - 6);
+                var hash = (email + time).hashCode();
 
                 //Check if the hash exist in the database, if so, generate another and try again.
-
                 const getParams = {
                     TableName: USERS_TABLE,
-                    // Key: { email: req.body.email}
                     FilterExpression: "email = :email and hashs = :hashs",
                     ExpressionAttributeValues: {
                         ":email": req.body.email,
                         ":hashs": hash
                     }
-
                 };
 
                 var params;
                 const Item = await dynamoDbClient.scan(getParams).promise().then(
                     data => {
                         if (data.Count == 0) {
-                            instance.hashs = String(hash)
+                            instance.hashs = String(hash);
                             hashed = true;
                             params = {
                                 TableName: USERS_TABLE,
@@ -107,7 +101,7 @@ app.post("/getByEmail", async function(req, res) {
                     res.json(data.Items);
                 } else {
                     res.status(404).json({
-                        error: "Could not find user with provided userId"
+                        error: "Could not find user with provided id"
                     });
                 }
             }
@@ -122,7 +116,6 @@ app.post("/getByEmail", async function(req, res) {
 app.post("/getById", async function(req, res) {
     const getParams = {
         TableName: USERS_TABLE,
-        // Key: { email: req.body.email}
         FilterExpression: "hashs = :hashs ",
         ExpressionAttributeValues: {
             ":hashs": req.body.hashs
@@ -135,7 +128,7 @@ app.post("/getById", async function(req, res) {
                     res.json(data.Items[0]);
                 } else {
                     res.status(404).json({
-                        error: "Could not find user with provided userId"
+                        error: "Could not find experiment with provided id"
                     });
                 }
             }
