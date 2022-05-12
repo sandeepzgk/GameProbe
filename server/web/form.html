@@ -31,9 +31,7 @@
             modal.style.display = "none";
         }
         
-        function renderTable(){
-
-            
+        function renderTable(){       
             fetch("assets/dummy.json").then(res => res.json()).then((data) => {
                 console.log(data)
                 var temp ="<table class='styled-table'><tr><th>ID</th><th>Description</th><th>Interaction Type</th><th>Survey URL</th></tr>";
@@ -51,13 +49,11 @@
                         temp += "<td>";
                             temp += data[i].haptic_setup[0].survey_url;
                         temp += "</td>";
-                    temp += "</tr>";    
-                    
+                    temp += "</tr>";   
                 }
                 temp +="</table>"
                 $('.root').html(temp)
-            }).catch(err => {throw err});
-            
+            }).catch(err => {throw err}); 
         }
 
         </script>
