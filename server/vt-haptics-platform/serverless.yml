@@ -53,7 +53,12 @@ resources:
             KeyType: RANGE
         BillingMode: PAY_PER_REQUEST
         TableName: ${self:custom.tableName}
+    NewResource:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: local-bucket
     
 plugins:
   - serverless-dynamodb-local
   - serverless-offline
+  - serverless-s3-local

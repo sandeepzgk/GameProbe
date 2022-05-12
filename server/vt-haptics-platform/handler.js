@@ -5,6 +5,7 @@ const serverless = require("serverless-http");
 
 const db_schema = require("./schema.json");
 
+const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 const app = express();
 const USERS_TABLE = process.env.USERS_TABLE;
 
@@ -28,12 +29,26 @@ if (process.env.IS_OFFLINE) {
     });
 }
 const dynamoDbClient = new AWS.DynamoDB.DocumentClient(dynamoDbClientParams);
-
+const s3client = new S3Client({
+	
+    forcePathStyle: true,
+  
+    credentials: {
+  
+      accessKeyId: "S3RVER", // This specific key is required when working offline
+  
+      secretAccessKey: "S3RVER",
+  
+    },
+  
+    endpoint: "http://localhost:4569",
+  
+});
 app.use(express.json());
-app.post("/setExperiment", async function(req, res) {
+app.post("/setExperiment", upload.array() ,async function(req, res) {
     var instance = req.body;
     var v = new Validator();
-    var validation_result = v.validate(instance, web_schema);
+    var validation_result = v.validate(instance, db_schema);
     if (validation_result.valid) {
         try {
             //Todo: generate a hash with 6 bit and check theres no collision
@@ -68,6 +83,26 @@ app.post("/setExperiment", async function(req, res) {
                         }
                     }
                 );
+                /*
+                client
+                  .send(
+                    new PutObjectCommand({
+                      Bucket: "local-bucket",
+                      Key: String(hash)+"-long",
+                      Body: instance.haptic_setup.linked_files.long_effect
+                      //Buffer.from("abcd"),
+                    }))
+	                .then(() => callback(null, "ok"));
+                client
+                    .send(
+                      new PutObjectCommand({
+                        Bucket: "local-bucket",
+                        Key: String(hash)+"-short",
+                        Body: rinstance.haptic_setup.linked_files.short_effect
+                        //Buffer.from("abcd"),
+                      }))
+                      .then(() => callback(null, "ok"));*/
+               
             }
             await dynamoDbClient.put(params).promise();
             res.status(200);
@@ -139,7 +174,18 @@ app.post("/getById", async function(req, res) {
         });
     }
 });
+app.post("getFile", async function(req,res){
+    var bucketParams = {
+        Bucket: "local-bucket",  
+        Key: req.body.filename
+    };
+    s3.getObject(bucketParams)
+            .createReadStream()
+            .pipe(res);
 
+    
+
+})
 app.use((req, res, next) => {
     return res.status(404).json({
         error: "Not Found",
