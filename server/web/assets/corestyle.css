@@ -15,10 +15,10 @@
 /* Modal Content/Box */
 .modal-content {
   background-color: #fefefe;
-  margin: 15% auto; /* 15% from the top and centered */
+  margin: 10px auto; /* 15% from the top and centered */
   padding: 20px;
   border: 1px solid #888;
-  width: 80%; /* Could be more or less, depending on screen size */
+  width: 50%; /* Could be more or less, depending on screen size */
 }
 
 /* The Close Button */
@@ -39,7 +39,8 @@
 
 .styled-table {
     border-collapse: collapse;
-    margin: 25px 0;
+    margin: auto;
+    width: 100%;
     font-size: 0.9em;
     font-family: sans-serif;
     min-width: 400px;
@@ -167,3 +168,11 @@
   background-color: #298e46;
   box-shadow: rgba(20, 70, 32, .2) 0 1px 0 inset;
 }
+
+
+.center {
+    margin: auto;
+    width: 80%;
+    border: 0px solid green;
+    padding: 10px;
+  }
