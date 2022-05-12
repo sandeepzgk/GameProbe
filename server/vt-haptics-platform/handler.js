@@ -40,7 +40,7 @@ app.post("/setExperiment", async function(req, res) {
             var hashed = false;
             while (!hashed) {
                 var email = req.body.email;
-                email = email.substr(email.length - 6); //@YANG: Ask why this is getting the last 6 characters wont this be @gmail.com ? 
+                email = email.substr(0, email.length<5?email.length:5); 
                 var time = String(Date.now());
                 time = time.substring(time.length - 6);
                 var hash = (email + time).hashCode();
