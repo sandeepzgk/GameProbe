@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en" class="">
+    <head>
+        <meta charset="UTF-8" />
+
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
+        <script src="//cdnjs.cloudflare.com/ajax/libs/react/17.0.2/umd/react.production.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/react-dom/17.0.2/umd/react-dom.production.min.js"></script>
+        <script src="//unpkg.com/@rjsf/core/dist/react-jsonschema-form.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <link rel="stylesheet" href="assets/modal.css" />
+       
+       <script>
+        function displayForm() {
+            let finalResult;
+            const Form = JSONSchemaForm.default;
+            const urls = ["assets/formschema.json", "assets/formuischema.json"];
+            Promise.all(urls.map(url => fetch(url).then(e => e.json()))).then(data => {
+                finalResult = data.flat();
+                ReactDOM.render(React.createElement(Form, {schema: finalResult[0],uiSchema: finalResult[1]}), document.getElementById("app"));
+            });
+        }
+
+        function openModal() {
+            var modal = document.getElementById("myModal");
+            modal.style.display = "block";
+        }
+
+        function closeModal() {
+            var modal = document.getElementById("myModal");
+            modal.style.display = "none";
+        }
+        
+        function renderTable(){
+
+            
+            fetch("assets/dummy.json").then(res => res.json()).then((data) => {
+                console.log(data)
+                var temp ="<table><tr><th>ID</th><th>Description</th><th>Interaction Type</th><th>Survey URL</th></tr>";
+                for( var i=0;i<data.length;i++){
+                    temp += "<tr>";
+                        temp += "<td>";
+                            temp += data[i].hashs;
+                        temp += "</td>";
+                        temp += "<td>";
+                            temp += data[i].haptic_setup[0].experiment_description;
+                        temp += "</td>";
+                        temp += "<td>";
+                            temp += data[i].haptic_setup[0].interaction_type;
+                        temp += "</td>";
+                        temp += "<td>";
+                            temp += data[i].haptic_setup[0].survey_url;
+                        temp += "</td>";
+                    temp += "</tr>";    
+                    
+                }
+                temp +="</table>"
+                $('.root').html(temp)
+            }).catch(err => {throw err});
+            
+        }
+
+        </script>
+    </head>
+
+    <body onload="displayForm()">
+        <button id="myBtn" onclick="openModal()">Create Experiment</button>
+        <button id="myBtn2" onclick="renderTable()">Fetch Experiments</button>
+        <div class="root"></div>
+        <div id="myModal" class="modal">
+            <div class="modal-content">
+              <span class="close" onclick="closeModal()">&times;</span>
+              <div id="app"></div>
+            </div>          
+        </div>
+    </body>
+</html>

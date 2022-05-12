@@ -1,0 +1,17 @@
+{
+    "integer": {
+      "ui:widget": "updown"
+    },
+    "interaction_type": {
+      "ui:widget": "radio",
+      "ui:options": {
+        "inline": true
+      }
+    },
+    "integerRange": {
+      "ui:widget": "range"
+    },
+    "experiment_maxscore": {
+      "ui:widget": "range"
+    }
+  }
