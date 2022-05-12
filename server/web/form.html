@@ -36,7 +36,7 @@
             
             fetch("assets/dummy.json").then(res => res.json()).then((data) => {
                 console.log(data)
-                var temp ="<table><tr><th>ID</th><th>Description</th><th>Interaction Type</th><th>Survey URL</th></tr>";
+                var temp ="<table class='styled-table'><tr><th>ID</th><th>Description</th><th>Interaction Type</th><th>Survey URL</th></tr>";
                 for( var i=0;i<data.length;i++){
                     temp += "<tr>";
                         temp += "<td>";
