@@ -56,7 +56,7 @@ resources:
     NewResource:
       Type: AWS::S3::Bucket
       Properties:
-        BucketName: local-bucket
+        BucketName: haptic-bucket
     
 plugins:
   - serverless-dynamodb-local

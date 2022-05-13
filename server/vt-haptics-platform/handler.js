@@ -2,12 +2,19 @@ const AWS = require("aws-sdk");
 const Validator = require("jsonschema").Validator;
 const express = require("express");
 const serverless = require("serverless-http");
-
+AWS.config.update({
+    accessKeyId: 'AKIAZTPKKP6ANO7VKR7Y' ,
+    secretAccessKey: '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' ,
+    region: "localhost",
+    endpoint: 'http://localhost:8000',
+  });
+  
 const db_schema = require("./schema.json");
 
-const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
+const { S3Client, PutObjectCommand, S3 } = require("@aws-sdk/client-s3");
 const app = express();
 const USERS_TABLE = process.env.USERS_TABLE;
+const s3 = new AWS.S3();
 
 String.prototype.hashCode = function() {
     var hash = 0;
@@ -24,11 +31,13 @@ if (process.env.IS_OFFLINE) {
     dynamoDbClientParams.endpoint = "http://localhost:8000";
     AWS.config.update({
         region: "localhost",
+        endpoint: 'http://localhost:8000',
         accessKeyId: "xxxxxxxxxxxxxx",
         secretAccessKey: "xxxxxxxxxxxxxx",
     });
 }
 const dynamoDbClient = new AWS.DynamoDB.DocumentClient(dynamoDbClientParams);
+
 const s3client = new S3Client({
 	
     forcePathStyle: true,
@@ -45,7 +54,7 @@ const s3client = new S3Client({
   
 });
 app.use(express.json());
-app.post("/setExperiment", upload.array() ,async function(req, res) {
+app.post("/setExperiment" ,async function(req, res) {
     var instance = req.body;
     var v = new Validator();
     var validation_result = v.validate(instance, db_schema);
@@ -83,25 +92,38 @@ app.post("/setExperiment", upload.array() ,async function(req, res) {
                         }
                     }
                 );
-                /*
-                client
-                  .send(
-                    new PutObjectCommand({
-                      Bucket: "local-bucket",
+                //console.log(88)
+                console.log(instance.haptic_setup[0].linked_files.long_effect+String(hash)+"-long")
+                console.log(instance.haptic_setup[0].linked_files.short_effect+String(hash)+"-short")
+               // console.log(88)
+                s3
+                  .upload({
+                      Bucket: "haptic-bucket",
                       Key: String(hash)+"-long",
-                      Body: instance.haptic_setup.linked_files.long_effect
+                      Body: instance.haptic_setup[0].linked_files.long_effect
+                    }
                       //Buffer.from("abcd"),
-                    }))
-	                .then(() => callback(null, "ok"));
-                client
-                    .send(
-                      new PutObjectCommand({
-                        Bucket: "local-bucket",
-                        Key: String(hash)+"-short",
-                        Body: rinstance.haptic_setup.linked_files.short_effect
-                        //Buffer.from("abcd"),
-                      }))
-                      .then(() => callback(null, "ok"));*/
+                    )
+	                //.then(() => callback(null, "ok"));
+               
+                s3
+                  .upload({
+                      Bucket: "haptic-bucket",
+                      Key: String(hash)+"-short",
+                      Body: instance.haptic_setup[0].linked_files.short_effect,
+                      ACL: 'public-read'
+                    }
+                      //Buffer.from("abcd"),
+                    )
+                // s3
+                //     .upload(
+                //       new PutObjectCommand({
+                //         Bucket: "local-bucket",
+                //         Key: String(hash)+"-short",
+                //         Body: instance.haptic_setup[0].linked_files.short_effect
+                //         //Buffer.from("abcd"),
+                //       }))
+                      //.then(() => callback(null, "ok"));
                
             }
             await dynamoDbClient.put(params).promise();
@@ -174,15 +196,31 @@ app.post("/getById", async function(req, res) {
         });
     }
 });
-app.post("getFile", async function(req,res){
+
+app.post("/getFile", async function(req,res){
+    console.log("file",req.body.filename);
     var bucketParams = {
-        Bucket: "local-bucket",  
+        Bucket: "haptic-bucket",  
         Key: req.body.filename
     };
-    s3.getObject(bucketParams)
+    s3.getObject(bucketParams, function(err, data) {
+        // Handle any error and exit
+        if (err){
+            console.log(err)
+            console.log(195)
+            return err;
+        }
+      // No error happened
+      // Convert Body from a Buffer to a String
+      let objectData = data.Body.toString('utf-8'); // Use the encoding necessary
+      console.log(199)
+      console.log(objectData);
+    });
+    res.status(200);
+        /*bucketParams)
             .createReadStream()
             .pipe(res);
-
+*/
     
 
 })
