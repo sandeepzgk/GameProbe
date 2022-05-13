@@ -28,11 +28,14 @@
 
         function openModal() {
             var modal = document.getElementById("myModal");
+            //$('#app').html("");
+            displayForm();
             modal.style.display = "block";
         }
 
         function closeModal() {
             var modal = document.getElementById("myModal");
+            
             modal.style.display = "none";
         }
         
@@ -64,8 +67,8 @@
         </script>
     </head>
 
-    <body onload="displayForm(); renderTable();">
-        <button class="button-24" style="float: right; margin: 40px;" onclick="openModal()">+</button>
+    <body onload="renderTable();">
+        <button class="button-24" style="float: right; margin: 40px;" onclick="openModal(); ">+</button>
         <div id="root" class="center" ></div>
         <div id="myModal" class="modal">
             <div class="modal-content">
