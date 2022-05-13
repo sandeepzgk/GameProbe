@@ -12,6 +12,7 @@
        
        <script>
         function displayForm() {
+            let serverURL="http://localhost:3000/";
             let finalResult;
             const Form = JSONSchemaForm.default;
             const urls = ["assets/formschema.json", "assets/formuischema.json"];
@@ -24,16 +25,17 @@
         function setFormData(formData)
         {
             console.log(formData.survey_url);
+            renderTable();
         }
 
         function openModal() {
             var modal = document.getElementById("myModal");
-            //$('#app').html("");
             displayForm();
             modal.style.display = "block";
         }
 
         function closeModal() {
+            renderTable();
             var modal = document.getElementById("myModal");
             
             modal.style.display = "none";
