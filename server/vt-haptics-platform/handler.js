@@ -2,12 +2,7 @@ const AWS = require("aws-sdk");
 const Validator = require("jsonschema").Validator;
 const express = require("express");
 const serverless = require("serverless-http");
-AWS.config.update({
-    accessKeyId: 'AKIAZTPKKP6ANO7VKR7Y' ,
-    secretAccessKey: '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' ,
-    region: "localhost",
-    endpoint: 'http://localhost:8000',
-  });
+
   
 const db_schema = require("./schema.json");
 
