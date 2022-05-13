@@ -79,17 +79,18 @@
 .button-24 {
   background: #FF4742;
   border: 1px solid #FF4742;
-  border-radius: 6px;
+  border-radius: 60px;
   box-shadow: rgba(0, 0, 0, 0.1) 1px 2px 4px;
   box-sizing: border-box;
   color: #FFFFFF;
   cursor: pointer;
   display: inline-block;
   font-family: nunito,roboto,proxima-nova,"proxima nova",sans-serif;
-  font-size: 16px;
-  font-weight: 800;
+  font-size: 36px;
+  font-weight: 100;
   line-height: 16px;
-  min-height: 40px;
+  min-height: 60px;
+  min-width: 60px;
   outline: 0;
   padding: 12px 14px;
   text-align: center;
@@ -113,9 +114,6 @@
 }
 
 
-
-<!-- HTML !-->
-<button class="button-3" role="button">Button 3</button>
 
 /* CSS */
 .button-3 {
