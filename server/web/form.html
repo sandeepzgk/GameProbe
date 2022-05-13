@@ -12,22 +12,32 @@
        
        <script>
         function displayForm() {
+            let serverURL="http://localhost:3000/";
             let finalResult;
             const Form = JSONSchemaForm.default;
             const urls = ["assets/formschema.json", "assets/formuischema.json"];
             Promise.all(urls.map(url => fetch(url).then(e => e.json()))).then(data => {
                 finalResult = data.flat();
-                ReactDOM.render(React.createElement(Form, {schema: finalResult[0],uiSchema: finalResult[1]}), document.getElementById("app"));
+                ReactDOM.render(React.createElement(Form, {schema: finalResult[0],uiSchema: finalResult[1],onSubmit: e => setFormData(e.formData)}), document.getElementById("app"));
             });
+        }
+
+        function setFormData(formData)
+        {
+            console.log(formData.survey_url);
+            renderTable();
         }
 
         function openModal() {
             var modal = document.getElementById("myModal");
+            displayForm();
             modal.style.display = "block";
         }
 
         function closeModal() {
+            renderTable();
             var modal = document.getElementById("myModal");
+            
             modal.style.display = "none";
         }
         
@@ -52,17 +62,16 @@
                     temp += "</tr>";   
                 }
                 temp +="</table>"
-                $('.root').html(temp)
+                $('#root').html(temp)
             }).catch(err => {throw err}); 
         }
 
         </script>
     </head>
 
-    <body onload="displayForm()">
-        <button class="button-24" onclick="openModal()">+</button>
-        <button class="button-3" onclick="renderTable()">Fetch Experiments</button>
-        <div class="root"></div>
+    <body onload="renderTable();">
+        <button class="button-24" style="float: right; margin: 40px;" onclick="openModal(); ">+</button>
+        <div id="root" class="center" ></div>
         <div id="myModal" class="modal">
             <div class="modal-content">
               <span class="close" onclick="closeModal()">&times;</span>

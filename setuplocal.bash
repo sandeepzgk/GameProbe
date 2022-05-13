@@ -8,6 +8,7 @@ cd server/vt-haptics-platform
 npm i -g serverless-offline
 serverless plugin install -n serverless-dynamodb-local
 serverless plugin install -n serverless-offline
+serverless plugin install -n serverless-s3-local
 sls dynamodb install
 npm install
 
