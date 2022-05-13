@@ -1,0 +1,116 @@
+{
+	"info": {
+		"_postman_id": "7b4469b5-1f10-49be-9993-de723a2fdc96",
+		"name": "RequestLibrary",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "createExperiment",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\":\"tes2t@gmail.com\",\r\n    \"hashs\":\"123456\",\r\n    \"haptic_setup\":[{\r\n        \"survey_url\":\"www.google23466555.com\",\r\n        \"experiment_description\":\"hello world this is an example description\",\r\n        \"user_instructions\":\"do these steps to make a million dollars\",\r\n        \"user_agreements\":[\r\n            \"checkbox 1 information\",\r\n            \"checkbox 2 information\",\r\n            \"checkbox 3 information\"\r\n        ],\r\n        \"interaction_type\":\"swipe\",\r\n        \"linked_files\":{\r\n            \"long_effect\":\"longeffect.haptics\",\r\n            \"short_effect\":\"2.haptics\",\r\n            \"instruction_image\":\"chucky.png\"\r\n        }    }]\r\n}"
+				},
+				"url": {
+					"raw": "{{server_url}}/setExperiment",
+					"host": [
+						"{{server_url}}"
+					],
+					"path": [
+						"setExperiment"
+					],
+					"query": [
+						{
+							"key": "server_url",
+							"value": "localhost:3000",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getById",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"hashs\":\"457994753\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{server_url}}/getById",
+					"host": [
+						"{{server_url}}"
+					],
+					"path": [
+						"getById"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getByEmail",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\":\"tes2t@gmail.com\"\n}"
+				},
+				"url": {
+					"raw": "{{server_url}}/getByEmail",
+					"host": [
+						"{{server_url}}"
+					],
+					"path": [
+						"getByEmail"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getFile",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"filename\":\"2146299970-short\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{server_url}}/getFile",
+					"host": [
+						"{{server_url}}"
+					],
+					"path": [
+						"getFile"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
