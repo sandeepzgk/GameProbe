@@ -2,11 +2,17 @@ const AWS = require("aws-sdk");
 const Validator = require("jsonschema").Validator;
 const express = require("express");
 const serverless = require("serverless-http");
-
-  
+AWS.config.update({
+    //accessKeyId: 'AKIAZTPKKP6ANO7VKR7Y' ,
+    //secretAccessKey: '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' ,
+    region: "us-east-1",
+    //endpoint: 'http://localhost:8000',
+  });
+//AWS.config.update({region: 'REGION'});// Create DynamoDB document client
+//v//ar docClient = new AWS.DynamoDB.DocumentClient({apiVersion: '2012-08-10'});
 const db_schema = require("./schema.json");
 
-const { S3Client, PutObjectCommand, S3 } = require("@aws-sdk/client-s3");
+//const { S3Client, PutObjectCommand, S3 } = require("@aws-sdk/client-s3");
 const app = express();
 const USERS_TABLE = process.env.USERS_TABLE;
 const s3 = new AWS.S3();
@@ -18,36 +24,22 @@ String.prototype.hashCode = function() {
         hash = ((hash << 5) - hash) + code;
         hash = hash & hash; // Convert to 32bit integer
     }
-    return hash;
+    return Math.abs(hash);
 }
 const dynamoDbClientParams = {};
-if (process.env.IS_OFFLINE) {
-    dynamoDbClientParams.region = "localhost";
-    dynamoDbClientParams.endpoint = "http://localhost:8000";
-    AWS.config.update({
-        region: "localhost",
-        endpoint: 'http://localhost:8000',
-        accessKeyId: "xxxxxxxxxxxxxx",
-        secretAccessKey: "xxxxxxxxxxxxxx",
-    });
-}
-const dynamoDbClient = new AWS.DynamoDB.DocumentClient(dynamoDbClientParams);
+// if (process.env.IS_OFFLINE) {
+    dynamoDbClientParams.region = "us-east-1";
+    // dynamoDbClientParams.endpoint = "http://localhost:8000";
+    // AWS.config.update({
+    //     region: "localhost",
+    //     endpoint: 'http://localhost:8000',
+    //     accessKeyId: "xxxxxxxxxxxxxx",
+    //     secretAccessKey: "xxxxxxxxxxxxxx",
+    //});
+//}
+const dynamoDbClient = new AWS.DynamoDB.DocumentClient()//dynamoDbClientParams);
 
-const s3client = new S3Client({
-	
-    forcePathStyle: true,
-  
-    credentials: {
-  
-      accessKeyId: "S3RVER", // This specific key is required when working offline
-  
-      secretAccessKey: "S3RVER",
-  
-    },
-  
-    endpoint: "http://localhost:4569",
-  
-});
+
 app.use(express.json());
 app.post("/setExperiment" ,async function(req, res) {
     var instance = req.body;
@@ -59,11 +51,11 @@ app.post("/setExperiment" ,async function(req, res) {
             var hashed = false;
             while (!hashed) {
                 var email = req.body.email;
-                email = email.substr(0, email.length<5?email.length:5); 
+                email = email.substr(0, email.length<4?email.length:4); 
                 var time = String(Date.now());
-                time = time.substring(time.length - 6);
+                time = time.substring(time.length - 4);
                 var hash = (email + time).hashCode();
-
+                console.log(57);
                 //Check if the hash exist in the database, if so, generate another and try again.
                 const getParams = {
                     TableName: USERS_TABLE,
@@ -73,11 +65,21 @@ app.post("/setExperiment" ,async function(req, res) {
                         ":hashs": hash
                     }
                 };
-
+                // const getParams = {
+                //     TableName: USERS_TABLE,
+                //     Key: {
+	
+                //         ":hashs": hash,
+                      
+                //       },
+                // };
+                console.log(hash);
                 var params;
                 const Item = await dynamoDbClient.scan(getParams).promise().then(
                     data => {
+                        console.log(data.Count);
                         if (data.Count == 0) {
+
                             instance.hashs = String(hash);
                             hashed = true;
                             params = {
@@ -87,21 +89,53 @@ app.post("/setExperiment" ,async function(req, res) {
                         }
                     }
                 );
+                // await dynamoDbClient.get(getParams, (error, result) => {
+	
+                //     if (error) {
+                    
+                //       console.log("88: "+error);
+                    
+                //       res.status(400).json({ error: 'Could not get user' });
+                    
+                //     }
+                //     console.log(101);
+                //     if (result.Item) {
+                    
+                //       print("found user ");
+
+                //     //res.json(result.Item);
+                //       //res.json({ userId, name });
+                    
+                //     } else {
+                        
+                //             instance.hashs = String(hash);
+                //             hashed = true;
+                //             params = {
+                //                 TableName: USERS_TABLE,
+                //                 Item: instance,
+                //             };
+                        
+                //     // res.status(404).json({ error: "User not found" });
+                //     console.log("No user found ");
+                //     }
+                    
+                //   }).promise();
+                console.log(81);
                 //console.log(88)
                 console.log(instance.haptic_setup[0].linked_files.long_effect+String(hash)+"-long")
                 console.log(instance.haptic_setup[0].linked_files.short_effect+String(hash)+"-short")
                // console.log(88)
-                s3
+                await s3
                   .upload({
                       Bucket: "haptic-bucket",
                       Key: String(hash)+"-long",
                       Body: instance.haptic_setup[0].linked_files.long_effect
                     }
                       //Buffer.from("abcd"),
-                    )
+                    ).promise()
 	                //.then(() => callback(null, "ok"));
                
-                s3
+                await s3
                   .upload({
                       Bucket: "haptic-bucket",
                       Key: String(hash)+"-short",
@@ -109,7 +143,7 @@ app.post("/setExperiment" ,async function(req, res) {
                       ACL: 'public-read'
                     }
                       //Buffer.from("abcd"),
-                    )
+                    ).promise()
                 // s3
                 //     .upload(
                 //       new PutObjectCommand({
@@ -124,6 +158,7 @@ app.post("/setExperiment" ,async function(req, res) {
             await dynamoDbClient.put(params).promise();
             res.status(200);
         } catch (error) {
+            console.log(error)
             res.status(500).json({
                 error: "Could not create user"
             });

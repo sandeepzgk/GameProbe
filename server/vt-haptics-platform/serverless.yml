@@ -5,15 +5,17 @@ frameworkVersion: '3'
 
 custom:
   tableName: 'users-table-${sls:stage}'
+  bucketName: 'haptic-bucket'
   dynamodb:
     start:
-      migrate: true
+      migrate: false
     stages:
       - dev
 
 provider:
   name: aws
   runtime: nodejs14.x
+  timeout: 1
   iam:
     role:
       statements:
@@ -27,6 +29,16 @@ provider:
             - dynamodb:DeleteItem
           Resource:
             - Fn::GetAtt: [ UsersTable, Arn ]
+        - Effect: 'Allow'
+          Action:
+            - "s3:*"
+          Resource:
+            Fn::Join:
+              - ''
+              - - 'arn:aws:s3:::'
+                -  ${self:custom.bucketName}
+                - '/*'
+
   environment:
     USERS_TABLE: ${self:custom.tableName}
 
@@ -56,7 +68,7 @@ resources:
     NewResource:
       Type: AWS::S3::Bucket
       Properties:
-        BucketName: haptic-bucket
+        BucketName: ${self:custom.bucketName}
     
 plugins:
   - serverless-dynamodb-local
