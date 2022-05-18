@@ -9,6 +9,7 @@ const db_schema = require("./schema.json");
 
 const app = express();
 const DATA_TABLE = process.env.DATA_TABLE;
+const STORAGE_BUCKET = process.env.STORAGE_BUCKET;
 const s3 = new AWS.S3();
 
 String.prototype.hashCode = function() {
@@ -65,14 +66,14 @@ app.post("/setExperiment" ,async function(req, res) {
                 );
                 await s3
                   .upload({
-                      Bucket: "haptic-bucket",
+                      Bucket: STORAGE_BUCKET,
                       Key: String(hash)+"-long",
                       Body: instance.haptic_setup[0].linked_files.long_effect
                     }).promise()
                
                 await s3
                   .upload({
-                      Bucket: "haptic-bucket",
+                      Bucket: STORAGE_BUCKET,
                       Key: String(hash)+"-short",
                       Body: instance.haptic_setup[0].linked_files.short_effect
                     }).promise()
