@@ -11,7 +11,7 @@ const app = express();
 const DATA_TABLE = process.env.DATA_TABLE;
 const STORAGE_BUCKET = process.env.STORAGE_BUCKET;
 const s3 = new AWS.S3();
-const debug = True;
+const debug = true;
 
 String.prototype.hashCode = function()
 {
