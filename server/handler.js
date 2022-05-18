@@ -67,7 +67,7 @@ app.post("/setExperiment" ,async function(req, res) {
                 await s3
                   .upload({
                       Bucket: STORAGE_BUCKET,
-                      Key: String(hash)+"-long",
+                      Key: String(hash)+"/long",
                       Body: instance.haptic_setup[0].linked_files.long_effect
                     }).promise()
                
