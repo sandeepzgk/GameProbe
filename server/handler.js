@@ -40,7 +40,8 @@ app.use(express.json());
 app.post("/setExperiment", async function(req, res)
 {
     var instance = req.body;
-    debuglog("Instance: "+instance);
+    debuglog("Instance: ",instance);
+    debuglog(JSON.stringify(instance));
     var v = new Validator();
     var validation_result = v.validate(instance, db_schema);
     if (validation_result.valid)
@@ -114,6 +115,8 @@ app.post("/setExperiment", async function(req, res)
     }
     else
     {
+        debuglog("Validation Error");
+        debuglog(JSON.stringify(validation_result.errors));
         res.status(400).json(
         {
             error: "Validation Error",
