@@ -5,7 +5,7 @@ const serverless = require("serverless-http");
 AWS.config.update({
     region: "us-east-1"
   });
-const db_schema = require("./schema.json");
+const db_schema = require("./static/assets/formschema.json");
 
 const app = express();
 const DATA_TABLE = process.env.DATA_TABLE;
@@ -153,7 +153,7 @@ app.post("/getById", async function(req, res) {
 
 app.post("/getFile", async function(req,res){
     var bucketParams = {
-        Bucket: "haptic-bucket",  
+        Bucket: STORAGE_BUCKET,  
         Key: req.body.filename
     };
     s3.getObject(bucketParams, function(err, data) {
