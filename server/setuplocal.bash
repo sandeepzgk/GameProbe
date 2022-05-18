@@ -1,15 +1,8 @@
 #!/bin/bash
-
-curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
-sudo apt-get install -y nodejs default-jre
+curl -fsSL https://fnm.vercel.app/install | bash -s -- --install-dir "./.fnm" --skip-shell
+fnm install
 sudo npm i -g serverless
-
-cd server/vt-haptics-platform
-npm i -g serverless-offline
-serverless plugin install -n serverless-dynamodb-local
-serverless plugin install -n serverless-offline
-serverless plugin install -n serverless-s3-local
-sls dynamodb install
+cd server/
 npm install
 
 
