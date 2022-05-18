@@ -27,7 +27,7 @@ String.prototype.hashCode = function()
 
 const dynamoDbClient = new AWS.DynamoDB.DocumentClient();
 
-function log(str)
+function debuglog(str)
 {
     if (debug)
     {
@@ -40,11 +40,12 @@ app.use(express.json());
 app.post("/setExperiment", async function(req, res)
 {
     var instance = req.body;
+    debuglog("Instance: "+instance);
     var v = new Validator();
     var validation_result = v.validate(instance, db_schema);
     if (validation_result.valid)
     {
-        log("Validation Success");
+        debuglog("Validation Success");
         try
         {
             var hashed = false;
@@ -55,7 +56,7 @@ app.post("/setExperiment", async function(req, res)
                 var time = String(Date.now());
                 time = time.substring(time.length - 4);
                 var uid = (email + time).hashCode();
-                log("Computed UUID:" + uid);
+                debuglog("Computed UUID:" + uid);
                 //Check if the generated uid is genuinely uuid (i.e not exisiting in the database)
                 const getParams = {
                     TableName: DATA_TABLE,
@@ -102,9 +103,9 @@ app.post("/setExperiment", async function(req, res)
             await dynamoDbClient.put(params).promise();
             res.status(200);
         }
-        catch (error)
+        catch (err)
         {
-            console.log(error)
+            debuglog(err);
             res.status(500).json(
             {
                 error: "Could not create user"
@@ -210,7 +211,7 @@ app.post("/getFile", async function(req, res)
         // Handle any error and exit
         if (err)
         {
-            console.log(err)
+            debuglog(err);
             return err;
         }
         let objectData = data.Body.toString('utf-8'); // Use the encoding necessary
