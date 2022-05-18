@@ -8,7 +8,7 @@ AWS.config.update({
 const db_schema = require("./schema.json");
 
 const app = express();
-const USERS_TABLE = process.env.USERS_TABLE;
+const DATA_TABLE = process.env.DATA_TABLE;
 const s3 = new AWS.S3();
 
 String.prototype.hashCode = function() {
@@ -39,27 +39,25 @@ app.post("/setExperiment" ,async function(req, res) {
                 var time = String(Date.now());
                 time = time.substring(time.length - 4);
                 var hash = (email + time).hashCode();
-                console.log(57);
                 //Check if the hash exist in the database, if so, generate another and try again.
                 const getParams = {
-                    TableName: USERS_TABLE,
-                    FilterExpression: "email = :email and hashs = :hashs",
+                    TableName: DATA_TABLE,
+                    FilterExpression: "email = :email and uuid = :uuid",
                     ExpressionAttributeValues: {
                         ":email": req.body.email,
-                        ":hashs": hash
+                        ":uuid": hash
                     }
                 };
      
                 var params;
                 const Item = await dynamoDbClient.scan(getParams).promise().then(
                     data => {
-                        console.log(data.Count);
                         if (data.Count == 0) {
 
-                            instance.hashs = String(hash);
+                            instance.uuid = String(hash);
                             hashed = true;
                             params = {
-                                TableName: USERS_TABLE,
+                                TableName: DATA_TABLE,
                                 Item: instance,
                             };
                         }
@@ -99,7 +97,7 @@ app.post("/setExperiment" ,async function(req, res) {
 
 app.post("/getByEmail", async function(req, res) {
     const getParams = {
-        TableName: USERS_TABLE,
+        TableName: DATA_TABLE,
         FilterExpression: "email = :email",
         ExpressionAttributeValues: {
             ":email": req.body.email
@@ -127,10 +125,10 @@ app.post("/getByEmail", async function(req, res) {
 
 app.post("/getById", async function(req, res) {
     const getParams = {
-        TableName: USERS_TABLE,
-        FilterExpression: "hashs = :hashs ",
+        TableName: DATA_TABLE,
+        FilterExpression: "uuid = :uuid ",
         ExpressionAttributeValues: {
-            ":hashs": req.body.hashs
+            ":uuid": req.body.uuid
         }
     }
     try {
@@ -161,7 +159,6 @@ app.post("/getFile", async function(req,res){
         // Handle any error and exit
         if (err){
             console.log(err)
-            console.log(195)
             return err;
         }
       let objectData = data.Body.toString('utf-8'); // Use the encoding necessary

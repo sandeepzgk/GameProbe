@@ -4,7 +4,7 @@ service: api
 frameworkVersion: '3'
 
 custom:
-  tableName: 'users-table-${sls:stage}'
+  tableName: 'data-table-${sls:stage}'
   bucketName: 'haptic-bucket-${sls:stage}'
   dynamodb:
     start:
@@ -28,7 +28,7 @@ provider:
             - dynamodb:UpdateItem
             - dynamodb:DeleteItem
           Resource:
-            - Fn::GetAtt: [ UsersTable, Arn ]
+            - Fn::GetAtt: [ DataTable, Arn ]
         - Effect: 'Allow'
           Action:
             - "s3:*Object"
@@ -37,7 +37,8 @@ provider:
            
 
   environment:
-    USERS_TABLE: ${self:custom.tableName}
+    DATA_TABLE: ${self:custom.tableName}
+    STORAGE_BUCKET: ${self:custom.bucketName}
 
 functions:
   api:
@@ -47,16 +48,16 @@ functions:
 
 resources:
   Resources:
-    UsersTable:
+    DataTable:
       Type: AWS::DynamoDB::Table
       Properties:
         AttributeDefinitions:
-          - AttributeName: hashs
+          - AttributeName: uuid
             AttributeType: S
           - AttributeName: email
             AttributeType: S
         KeySchema:
-          - AttributeName: hashs
+          - AttributeName: uuid
             KeyType: HASH
           - AttributeName: email
             KeyType: RANGE
