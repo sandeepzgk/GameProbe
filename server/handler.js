@@ -57,15 +57,15 @@ app.post("/setExperiment", async function(req, res)
                 var time = String(Date.now());
                 time = time.substring(time.length - 4);
                 var uid = (email + time).hashCode();
-                debuglog("Computed UUID:" + uid);
-                //Check if the generated uid is genuinely uuid (i.e not exisiting in the database)
+                debuglog("Computed expid:" + uid);
+                //Check if the generated uid is genuinely expid (i.e not exisiting in the database)
                 const getParams = {
                     TableName: DATA_TABLE,
-                    FilterExpression: "email = :email and uuid = :uid",
+                    FilterExpression: "email = :email and expid = :uid",
                     ExpressionAttributeValues:
                     {
                         ":email": req.body.email,
-                        ":uuid": uid
+                        ":expid": uid
                     }
                 };
 
@@ -76,7 +76,7 @@ app.post("/setExperiment", async function(req, res)
                         if (getData.Count == 0)
                         {
 
-                            instance.uuid = String(uid);
+                            instance.expid = String(uid);
                             hashed = true;
                             putParams = {
                                 TableName: DATA_TABLE,
@@ -169,10 +169,10 @@ app.post("/getById", async function(req, res)
 {
     const getParams = {
         TableName: DATA_TABLE,
-        FilterExpression: "uuid = :uuid ",
+        FilterExpression: "expid = :expid ",
         ExpressionAttributeValues:
         {
-            ":uuid": req.body.uuid
+            ":expid": req.body.expid
         }
     }
     try

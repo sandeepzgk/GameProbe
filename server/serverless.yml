@@ -52,12 +52,12 @@ resources:
       Type: AWS::DynamoDB::Table
       Properties:
         AttributeDefinitions:
-          - AttributeName: uuid
+          - AttributeName: expid
             AttributeType: S
           - AttributeName: email
             AttributeType: S
         KeySchema:
-          - AttributeName: uuid
+          - AttributeName: expid
             KeyType: HASH
           - AttributeName: email
             KeyType: RANGE
