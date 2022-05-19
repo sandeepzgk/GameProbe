@@ -13,18 +13,6 @@ const STORAGE_BUCKET = process.env.STORAGE_BUCKET;
 const s3 = new AWS.S3();
 const debug = true;
 
-String.prototype.hashCode = function()
-{
-    var hash = 0;
-    for (var i = 0; i < this.length; i++)
-    {
-        var code = this.charCodeAt(i);
-        hash = ((hash << 5) - hash) + code;
-        hash = hash & hash; // Convert to 32bit integer
-    }
-    return Math.abs(hash);
-}
-
 const dynamoDbClient = new AWS.DynamoDB.DocumentClient();
 
 function debuglog(str)
@@ -49,19 +37,15 @@ app.post("/setExperiment", async function(req, res)
         debuglog("Validation Success");
         try
         {
-            var hashed = false;
-            while (!hashed)
-            {
-                var email = req.body.email;
-                email = email.substr(0, email.length < 4 ? email.length : 4);
-                var time = String(Date.now());
-                time = time.substring(time.length - 4);
-                var uid = (email + time).hashCode();
+            var unique = false;
+            while (!unique)
+            {              
+                var uid = Math.random().toString(26).slice(-2).toUpperCase()+String(Date.now()).slice(-3);
                 debuglog("Computed expid:" + uid);
                 //Check if the generated uid is genuinely expid (i.e not exisiting in the database)
                 const getParams = {
                     TableName: DATA_TABLE,
-                    FilterExpression: "email = :email and expid = :uid",
+                    FilterExpression: "email = :email and expid = :expid",
                     ExpressionAttributeValues:
                     {
                         ":email": req.body.email,
@@ -77,11 +61,11 @@ app.post("/setExperiment", async function(req, res)
                         {
 
                             instance.expid = String(uid);
-                            hashed = true;
+                            unique = true;
                             putParams = {
                                 TableName: DATA_TABLE,
                                 Item: instance,
-                            };
+                            };                        
                         }
                     }
                 );
@@ -89,20 +73,39 @@ app.post("/setExperiment", async function(req, res)
             await s3.upload(
             {
                 Bucket: STORAGE_BUCKET,
-                Key: String(hash) + "/long",
-                Body: instance.haptic_setup[0].linked_files.long_effect
+                Key: String(uid) + "/long",
+                Body: instance.linked_files.long_effect
             }).promise();
 
             await s3.upload(
             {
                 Bucket: STORAGE_BUCKET,
-                Key: String(hash) + "/short",
-                Body: instance.haptic_setup[0].linked_files.short_effect
+                Key: String(uid) + "/short",
+                Body: instance.linked_files.short_effect
             }).promise();
 
+            debuglog("Put Parameters to DB :");
+            debuglog(JSON.stringify(putParams));
 
-            await dynamoDbClient.put(params).promise();
-            res.status(200);
+            delete putParams.Item["linked_files"]; //deleting files from being injected into the database, it needs to be only available for s3 uploads
+            debuglog("Delete Put Param Files");
+            debuglog(JSON.stringify(putParams));
+            dynamoDbClient.put(putParams).promise()
+                .then(function(data) 
+                    {
+                        debuglog("Success");
+                        debuglog(JSON.stringify(data));
+                    })
+                .catch(function(err) 
+                    {
+                        debuglog("Failure");
+                        debuglog(JSON.stringify(err));
+                    });
+
+            res.status(200).json(
+                {
+                    expid: uid
+                });
         }
         catch (err)
         {

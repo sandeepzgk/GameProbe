@@ -1,6 +1,6 @@
 org: sandeepzgk
 app: vt-haptics-platform
-service: api
+service: core
 frameworkVersion: '3'
 
 custom:
@@ -31,9 +31,14 @@ provider:
             - Fn::GetAtt: [ DataTable, Arn ]
         - Effect: 'Allow'
           Action:
-            - "s3:*Object"
+            - "s3:GetObject"
+            - "s3:PutObject"
           Resource:
-             - Fn::GetAtt: [ StorageBucket, Arn ]
+            Fn::Join:
+              - ''
+              - - 'arn:aws:s3:::'
+                - !Ref StorageBucket
+                - '/*'
            
 
   environment:
