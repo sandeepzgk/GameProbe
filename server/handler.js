@@ -70,19 +70,33 @@ app.post("/setExperiment", async function(req, res)
                     }
                 );
             }
-            await s3.upload(
-            {
-                Bucket: STORAGE_BUCKET,
-                Key: String(uid) + "/long",
-                Body: instance.linked_files.long_effect
-            }).promise();
 
-            await s3.upload(
+            for (var i=0; i<Object.keys(instance.linked_files).length; i++)
             {
-                Bucket: STORAGE_BUCKET,
-                Key: String(uid) + "/short",
-                Body: instance.linked_files.short_effect
-            }).promise();
+                var s3Key = String(uid) + "/" + Object.keys(instance.linked_files)[i];
+                /*** Example File Data
+                 * "long_effect": "data:application/octet-stream;name=two.haptics;base64,dHdvdHdvdHdv" 
+                 ***/
+                var fileData = instance.linked_files[Object.keys(instance.linked_files)[i]].split(";")[2]; //extracting the last part of the upload , i.e. in the above example "base64,dHdvdHdvdHdv"
+                var fileBody = Buffer.from(fileData.split(",")[1], 'base64').toString('binary'); // converting fileData after splitting the base64 header to binary object for s3 upload
+                await s3.upload(
+                    {
+                        Bucket: STORAGE_BUCKET,
+                        Key: s3Key ,
+                        Body: fileBody
+                    }).promise()
+                    .then(function(data) 
+                    {
+                        debuglog("Successfully Upload s3");
+                        debuglog(JSON.stringify(data));
+                    })
+                    .catch(function(err) 
+                    {
+                        debuglog("Failed Upload s3");
+                        debuglog(JSON.stringify(err));
+                    });
+
+            }
 
             debuglog("Put Parameters to DB :");
             debuglog(JSON.stringify(putParams));
