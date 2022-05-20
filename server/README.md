@@ -31,6 +31,15 @@ This is a document that explains how to run the ```server``` on AWS via Express 
     serverless client deploy
     serverless client remove # to remove the deployed client
     ```    
+4. To deploy to different environments
+    _Notes_: 
+    * By default the deploy happens to the "dev" channel, i.e. development environment of aws for testing. To deploy to production environment execute 
+    * Deploy to production environment only after thorough testing in the development environment
+
+    ```bash
+    serverless deploy --stage prod # for deploying the core logic to production environment, the DB, Lambda, S3 buckets are all different for this environment
+    serverless client deploy --stage prod # for deploying the static website to production environment. 
+    ```
 
 ## For Local Environment    
 1. Install Local SERVERLESS for Debug
