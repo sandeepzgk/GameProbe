@@ -1,16 +1,18 @@
 org: sandeepzgk
-app: vt-haptics-platform
+app: vtgame-platform
 service: core
 frameworkVersion: '3'
 
 custom:
-  tableName: 'data-table-${sls:stage}'
-  bucketName: 'haptic-bucket-${sls:stage}'
+  tableName: 'vtgame-data-table-${sls:stage}'
+  bucketName: 'vtgame-file-bucket-${sls:stage}'
   dynamodb:
     start:
       migrate: false
     stages:
-      - dev
+      - dev  	
+  client:
+    bucketName: 'vtgame-web-bucket-${sls:stage}'
 
 provider:
   name: aws
@@ -44,6 +46,7 @@ provider:
   environment:
     DATA_TABLE: ${self:custom.tableName}
     STORAGE_BUCKET: ${self:custom.bucketName}
+    REGION: "us-east-1"
 
 functions:
   api:
@@ -77,3 +80,4 @@ plugins:
   - serverless-dynamodb-local
   - serverless-offline
   - serverless-s3-local
+  - serverless-finch

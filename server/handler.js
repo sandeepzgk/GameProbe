@@ -2,16 +2,18 @@ const AWS = require("aws-sdk");
 const Validator = require("jsonschema").Validator;
 const express = require("express");
 const serverless = require("serverless-http");
+
 AWS.config.update(
 {
-    region: "us-east-1"
+    region: process.env.REGION
 });
-const db_schema = require("./static/assets/formschema.json");
+const db_schema = require("./client/dist/assets/formschema.json"); /// <--- reference to the original form schema that works for both the webpage and the server side validation
 const app = express();
 const DATA_TABLE = process.env.DATA_TABLE;
 const STORAGE_BUCKET = process.env.STORAGE_BUCKET;
 const s3 = new AWS.S3();
 const debug = true;
+const signedUrlExpireSeconds = 60 * 5; //Link Expires in 5 minutes
 
 const dynamoDbClient = new AWS.DynamoDB.DocumentClient();
 
@@ -77,32 +79,32 @@ app.post("/setExperiment", async function(req, res)
                 /*** Example File Data
                  * "long_effect": "data:application/octet-stream;name=two.haptics;base64,dHdvdHdvdHdv" 
                  ***/
-                var fileData = instance.linked_files[Object.keys(instance.linked_files)[i]].split(";")[2]; //extracting the last part of the upload , i.e. in the above example "base64,dHdvdHdvdHdv"
-                var fileBody = Buffer.from(fileData.split(",")[1], 'base64').toString('binary'); // converting fileData after splitting the base64 header to binary object for s3 upload
-                await s3.upload(
-                    {
-                        Bucket: STORAGE_BUCKET,
-                        Key: s3Key ,
-                        Body: fileBody
-                    }).promise()
-                    .then(function(data) 
-                    {
-                        debuglog("Successfully Upload s3");
-                        debuglog(JSON.stringify(data));
-                    })
-                    .catch(function(err) 
-                    {
-                        debuglog("Failed Upload s3");
-                        debuglog(JSON.stringify(err));
-                    });
+                if(instance.linked_files[Object.keys(instance.linked_files)[i]]!="") //Only upload files that have values.
+                {
+                    var fileData = instance.linked_files[Object.keys(instance.linked_files)[i]].split(";")[2]; //extracting the last part of the upload , i.e. in the above example "base64,dHdvdHdvdHdv"
+                    var fileBody = Buffer.from(fileData.split(",")[1], 'base64').toString('binary'); // converting fileData after splitting the base64 header to binary object for s3 upload
+                    await s3.upload(
+                        {
+                            Bucket: STORAGE_BUCKET,
+                            Key: s3Key ,
+                            Body: fileBody
+                        }).promise()
+                        .then(function(data) 
+                        {
+                            debuglog("Successfully Upload s3");
+                            debuglog(JSON.stringify(data));
+                            instance.linked_files[Object.keys(instance.linked_files)[i]] = "true"; // Updating the string for the database to know if a file exists for that key, else its blank.
+                        })
+                        .catch(function(err) 
+                        {
+                            debuglog("Failed Upload s3");
+                            debuglog(JSON.stringify(err));
+                        });
+                }
 
             }
 
             debuglog("Put Parameters to DB :");
-            debuglog(JSON.stringify(putParams));
-
-            delete putParams.Item["linked_files"]; //deleting files from being injected into the database, it needs to be only available for s3 uploads
-            debuglog("Delete Put Param Files");
             debuglog(JSON.stringify(putParams));
             dynamoDbClient.put(putParams).promise()
                 .then(function(data) 
@@ -161,6 +163,30 @@ app.post("/getByEmail", async function(req, res)
             {
                 if (data.Count > 0)
                 {
+                    debuglog("Data Count: "+ data.Count)
+                    for(var i = 0; i < data.Count; i++)
+                    {
+                        //get signed urls for links       
+                        debuglog("Outerloop");
+                        debuglog(JSON.stringify(data.Items[i]));
+                        debuglog(JSON.stringify(data.Items[i].linked_files));
+                        debuglog(JSON.stringify(Object.keys(data.Items[i].linked_files)));
+                        var allJSONKeys =   Object.keys(data.Items[i].linked_files);              
+                        debuglog("all JSON Keys Length:  "+allJSONKeys.length);
+                        for (var j=0; j<allJSONKeys.length; j++)
+                        {
+                            var jsonKey = allJSONKeys[j];
+                            debuglog("JSONKey: "+ jsonKey);
+                            var currentLinkedFile = data.Items[i].linked_files[jsonKey];
+                            if(currentLinkedFile == "true")
+                            {
+                              var fileKey = data.Items[i].expid+"/"+jsonKey;
+                              var signedURL = s3.getSignedUrl('getObject', {Bucket: STORAGE_BUCKET,Key: fileKey,Expires: signedUrlExpireSeconds});
+                              debuglog("Signed URL: " + signedURL);
+                              data.Items[i].linked_files[jsonKey] = signedURL;
+                            }
+                        }
+                    }
                     res.json(data.Items);
                 }
                 else
@@ -173,14 +199,18 @@ app.post("/getByEmail", async function(req, res)
             }
         );
     }
-    catch (error)
+    catch (err)
     {
         res.status(500).json(
         {
-            error: "Could not retreive user"
+            error: "Could not retreive user",
+            errorString: err
         });
     }
 });
+
+
+
 
 app.post("/getById", async function(req, res)
 {
@@ -192,6 +222,7 @@ app.post("/getById", async function(req, res)
             ":expid": req.body.expid
         }
     }
+
     try
     {
         const Item = await dynamoDbClient.scan(getParams).promise().then(
@@ -199,7 +230,31 @@ app.post("/getById", async function(req, res)
             {
                 if (data.Count > 0)
                 {
-                    res.json(data.Items[0]);
+                    debuglog("Data Count: "+ data.Count)
+                    for(var i = 0; i < data.Count; i++)
+                    {
+                        //get signed urls for links       
+                        debuglog("Outerloop");
+                        debuglog(JSON.stringify(data.Items[i]));
+                        debuglog(JSON.stringify(data.Items[i].linked_files));
+                        debuglog(JSON.stringify(Object.keys(data.Items[i].linked_files)));
+                        var allJSONKeys =   Object.keys(data.Items[i].linked_files);              
+                        debuglog("all JSON Keys Length:  "+allJSONKeys.length);
+                        for (var j=0; j<allJSONKeys.length; j++)
+                        {
+                            var jsonKey = allJSONKeys[j];
+                            debuglog("JSONKey: "+ jsonKey);
+                            var currentLinkedFile = data.Items[i].linked_files[jsonKey];
+                            if(currentLinkedFile == "true")
+                            {
+                              var fileKey = data.Items[i].expid+"/"+jsonKey;
+                              var signedURL = s3.getSignedUrl('getObject', {Bucket: STORAGE_BUCKET,Key: fileKey,Expires: signedUrlExpireSeconds});
+                              debuglog("Signed URL: " + signedURL);
+                              data.Items[i].linked_files[jsonKey] = signedURL;
+                            }
+                        }
+                    }
+                    res.json(data.Items);
                 }
                 else
                 {
@@ -211,36 +266,17 @@ app.post("/getById", async function(req, res)
             }
         );
     }
-    catch (error)
+    catch (err)
     {
         res.status(500).json(
         {
-            error: "Could not retreive user"
+            error: "Could not retreive experiment",
+            errorString: err
         });
     }
 });
 
-app.post("/getFile", async function(req, res)
-{
-    var bucketParams = {
-        Bucket: STORAGE_BUCKET,
-        Key: req.body.filename
-    };
-    s3.getObject(bucketParams, function(err, data)
-    {
-        // Handle any error and exit
-        if (err)
-        {
-            debuglog(err);
-            return err;
-        }
-        let objectData = data.Body.toString('utf-8'); // Use the encoding necessary
-    });
-    res.status(200);
 
-
-
-})
 app.use((req, res, next) =>
 {
     return res.status(404).json(
