@@ -51,6 +51,11 @@ This is a document that explains how to run the ```server``` on AWS via Express 
     serverless client deploy --stage prod # for deploying the static website to production environment. 
     ```
 
+## Testing
+1. This project uses Postman for API testing and you can download local copy of postman from https://www.postman.com/
+2. Postman collection is available at https://www.postman.com/sandeepzgk/workspace/vtgame-platform    
+    * This collection is configured with the API and enviroment variables to test out the APIs
+
 ## For Local Environment    
 1. Install Local SERVERLESS for Debug
     ```bash
