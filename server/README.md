@@ -20,19 +20,29 @@ This is a document that explains how to run the ```server``` on AWS via Express 
     ```bash 
     setuplocal.bash
     ```
-2. To deploy to AWS (Lambda/S3/DynamoDB or core logic)
+2. Configuring AWS Keys for deployment
+
+    * You would need to configure your local machine with the appropriate keys to ensure that you have the right roles to deploy the services and files to AWS. You can do that by running the following code. You will not be able to deploy without these keys setup properly.
+
+    ```bash
+    export AWS_ACCESS_KEY_ID="YOUR_KEY_ID"
+    export AWS_SECRET_ACCESS_KEY="YOUR_AWS_SECRET_KEY"
+    ```
+
+3. To deploy to AWS (Lambda/S3/DynamoDB or core logic)
     ```bash 
     npm install         # to install dependencies
     serverless deploy
     serverless remove   # to remove the deployed services
     ```
-3. To deploy to AWS (Static Files aka Static Web Pages or website)
+4. To deploy to AWS (Static Files aka Static Web Pages or website)
     ```bash 
     serverless client deploy
     serverless client remove # to remove the deployed client
     ```    
-4. To deploy to different environments
-    _Notes_: 
+5. To deploy to different environments
+
+    _Important Notes_: 
     * By default the deploy happens to the "dev" channel, i.e. development environment of aws for testing. To deploy to production environment execute 
     * Deploy to production environment only after thorough testing in the development environment
 
