@@ -15,6 +15,7 @@ DESCR: Check if the iOS meets minimum requirements to make sure it works.
 INPUT: na
 RET  : return true if it meets requirement, else return false. Important for the game engine to know that it does not qualify to use this particular device for the experiment so a error should be shown to the user. 
 DOC: https://developer.lofelt.com/integrating-haptics/studio-framework-for-ios/#integrating-haptics-using-the-studio-framework-for-ios  deviceMeetsMinimumRequirements
+**/
 func checkDevRequirements()
 {
 
@@ -62,11 +63,56 @@ func playHapticData(data: NSString)
 
 /**
 DESCR: Requests and downloads the JSON config file from our server
-INPUT: Requires, two parameters, one is the postURL 
+INPUT: Requires, two parameters, one is the postURL for the server, which is available from postman (pass it as a parameter) and the experiment ID from the user form.
 RET  : the function returns true, it success or false
-DOC: https://developer.lofelt.com/integrating-haptics/studio-framework-for-ios/#play-haptic-with-audio
+ERROR: If the service return code is 503, try again upto 2 times before returning error message
 **/
 func requestJSONConfig(postURL:URL, expID:NSString) 
 {
 
 }
+
+
+
+/**
+DESCR: Requests and downloads the JSON config file from our server
+INPUT: Requires, two parameters, one is the postURL for the server, which is available from postman (pass it as a parameter) and the experiment ID from the user form.
+RET  : the function returns true, it success or false
+ERROR: If the service return code is 503, try again upto 2 times before returning error message
+DOC: previously, getConfig function, please do not use HARDCODED url, get it as a parameter
+**/
+func requestJSONConfig(postURL:URL, expID:NSString) 
+{
+
+}
+
+
+/**
+DESCR: Composes URL get parameters for hidden values to the survey url
+INPUT: na
+RET  : the function returns true, it success or false
+DOC: previously this code was wrapped inside the init function, this is not the right place for this code.
+**/
+func composeGetURLParams() 
+{
+
+}
+
+/**
+DESCR: This is a loop which iterates through all the items in the "linked_files" currently 4 items, and downloads them and keeps them locally.
+INPUT: na
+RET  : na
+DOC: previously this code was in downloadContent
+**/
+func downloadAssets() 
+{
+
+}
+
+
+
+
+
+
+
+
