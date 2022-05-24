@@ -8,6 +8,7 @@ class GameViewModel: ObservableObject {
     private(set) var storage: Storage
     private(set) var stateTracker: StateTracker
     private var haptics: LofeltHaptics?
+    
     var configuration: Configuration?
     public var userId: String = "" {
         didSet {
@@ -39,11 +40,28 @@ class GameViewModel: ObservableObject {
         }
     }
     
+//    public var config_id: String? {
+//        didSet {
+//            print("set config_id: \(config_id)")
+//            self.configuration = Configuration(config_id: self.config_id!)
+//            if let max_score_string = self.configuration?.JSONconfig?.max_score, let max_score = Int(max_score_string) {
+//                self.MAX_SCORE = max_score
+//            }
+//            if !configHiddenVariablesDone {
+//                self.hiddenVariables += "&config_id=" + (config_id ?? "")
+//                self.configHiddenVariablesDone = true
+//                if userHiddenVariablesDone {
+//                    self.hiddenVariables = self.hiddenVariables.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+//                }
+//            }
+//        }
+//    }
+    
     public var config_id: String? {
         didSet {
             print("set config_id: \(config_id)")
             self.configuration = Configuration(config_id: self.config_id!)
-            if let max_score_string = self.configuration?.JSONconfig?.max_score, let max_score = Int(max_score_string) {
+            if let max_score=self.configuration?.JSONconfig?.experimentMaxscore {
                 self.MAX_SCORE = max_score
             }
             if !configHiddenVariablesDone {
@@ -93,16 +111,34 @@ class GameViewModel: ObservableObject {
     func start() {
         if state.board.isMatrixEmpty { reset() }
     }
-    
-    func setupHaptics() {
+    /**
+    DESCR: Initializes the LofeltHaptics Suite
+    INPUT: na
+    RET  : the function returns true, if it successfully intialized or false if it failed to initialize.
+    **/
+    func setupHaptics() -> Bool{
         do {
             self.haptics = try LofeltHaptics.init()
+            return true
         } catch let error {
             print("Lofelt Haptics Engine Creation Error: \(error)")
-            return
+            return false
         }
     }
-
+    
+    /**
+    DESCR: Check if the iOS meets minimum requirements to make sure it works.
+    INPUT: na
+    RET  : return true if it meets requirement, else return false. Important for the game engine to know that it does not qualify to use this particular device for the experiment so a error should be shown to the user.
+    DOC: https://developer.lofelt.com/integrating-haptics/studio-framework-for-ios/#integrating-haptics-using-the-studio-framework-for-ios  deviceMeetsMinimumRequirements
+    **/
+    func checkDevRequirements() -> Bool{
+        let meetDeviceRequire=try LofeltHaptics.deviceMeetsMinimumRequirement();
+        if(!meetDeviceRequire){
+            //@TODO: Kill the game when the device does not meet the device requirements
+        }
+        return meetDeviceRequire
+    }
     func addNumber() {
         let result = engine.addNumber(state.board)
         state = stateTracker.updateCurrent(with: result.newBoard)
@@ -155,20 +191,74 @@ class GameViewModel: ObservableObject {
     
 }
 
-struct ConfigBody: Codable {
-    let user_instructions_image: URL
-    let gesture: String
-    let long_haptics_file: URL
-    let short_haptics_file: URL
-    var survey_link: String
-    let instructions: String
-    let max_score: String?
+//struct ConfigBody: Codable {
+//    let user_instructions_image: URL
+//    let gesture: String
+//    let long_haptics_file: URL
+//    let short_haptics_file: URL
+//    var survey_link: String
+//    let instructions: String
+//    let max_score: String?
+//}
+
+struct ConfigElement: Codable {
+    let interactionType, experimentDescription: String
+    let experimentMaxscore: Int
+    let surveyURL: String
+    let userAgreements: [String]
+    let userInstructions, expid, email: String
+    let linkedFiles: LinkedFiles
+
+    enum CodingKeys: String, CodingKey {
+        case interactionType = "interaction_type"
+        case experimentDescription = "experiment_description"
+        case experimentMaxscore = "experiment_maxscore"
+        case surveyURL = "survey_url"
+        case userAgreements = "user_agreements"
+        case userInstructions = "user_instructions"
+        case expid, email
+        case linkedFiles = "linked_files"
+    }
 }
+struct ConfigBody: Codable {
+    let interactionType, experimentDescription: String
+    let experimentMaxscore: Int
+    let surveyURL: String
+    let userAgreements: [String]
+    let userInstructions, expid, email: String
+    let linkedFiles: LinkedFiles
+
+    enum CodingKeys: String, CodingKey {
+        case interactionType = "interaction_type"
+        case experimentDescription = "experiment_description"
+        case experimentMaxscore = "experiment_maxscore"
+        case surveyURL = "survey_url"
+        case userAgreements = "user_agreements"
+        case userInstructions = "user_instructions"
+        case expid, email
+        case linkedFiles = "linked_files"
+    }
+}
+// MARK: - LinkedFiles
+struct LinkedFiles: Codable {
+    let instructionImage, shortEffect, longEffect, longAudio: URL
+
+    enum CodingKeys: String, CodingKey {
+        case instructionImage = "instruction_image"
+        case shortEffect = "short_effect"
+        case longEffect = "long_effect"
+        case longAudio = "long_audio"
+    }
+}
+
+
 
 class Configuration {
     var JSONconfig: ConfigBody?
+    var JSONarray: ConfigArray?
     let config_id: String
     let downloadCondition: NSCondition
+    private var reconnect_num=0;
     var downloaded = false {
         didSet {
             if self.downloaded && oldValue == false {
@@ -209,12 +299,108 @@ class Configuration {
         }
     }
     
+//    func getConfig() {
+//        let url = URL(string: "https://haptics-test.herokuapp.com/config/getConfig")!
+//        var request = URLRequest(url: url)
+//        let bodyData = try? JSONSerialization.data(
+//            withJSONObject: [
+//                "config_id": config_id
+//            ],
+//            options: []
+//        )
+//        request.httpMethod = "POST"
+//        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+//        request.httpBody = bodyData
+//        let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
+//            if let data = data {
+//                let jsonDecoder = JSONDecoder()
+//                do {
+//                    self.JSONconfig = try jsonDecoder.decode(ConfigBody.self, from: data)
+//                    self.downloadContent()
+//                }
+//                catch {
+//                    print(error)
+//                    if(error.localizedDescription == "The data couldn’t be read because it is missing.") {
+//                        self.errorMsg = "invalid experiment id"
+//                    } else {
+//                        self.errorMsg = "please restart the server"
+//                    }
+//                    self.downloadCondition.signal()
+//                }
+//            } else {
+//                print("no data returned, server is down")
+//                self.errorMsg = "please restart the server"
+//                self.downloadCondition.signal()
+//            }
+//        }
+//        task.resume()
+//    }
+    typealias ConfigArray = [ConfigBody]
     func getConfig() {
-        let url = URL(string: "https://haptics-test.herokuapp.com/config/getConfig")!
+        let url = URL(string: "https://t8fqmzvdd7.execute-api.us-east-1.amazonaws.com/getById")!
         var request = URLRequest(url: url)
         let bodyData = try? JSONSerialization.data(
             withJSONObject: [
-                "config_id": config_id
+                "expid": config_id
+            ],
+            options: []
+        )
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = bodyData
+        
+        var success=false;
+        
+        let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
+            if let data = data {
+                let jsonDecoder = JSONDecoder()
+                do {
+                    
+                    self.JSONarray = try jsonDecoder.decode(ConfigArray.self, from: data)
+                    if let config_body = self.JSONarray?[0] {
+                        self.JSONconfig=config_body;
+                    }
+                    success=true;
+                    self.reconnect_num=0;
+                    self.downloadContent()
+                }
+                catch {
+                    print(error)
+                    if(error.localizedDescription == "The data couldn’t be read because it is missing.") {
+                        self.errorMsg = "invalid experiment id"
+                    } else {
+                        self.errorMsg = "please restart the server"
+                        if(self.reconnect_num<2){
+                            self.reconnect_num+=1;
+                            self.getConfig();
+                        }
+                        
+                    }
+                    self.downloadCondition.signal()
+                }
+                print(success);
+            } else {
+                print("no data returned, server is down")
+                self.errorMsg = "please restart the server"
+                self.downloadCondition.signal()
+            }
+        }
+        task.resume();
+
+        
+    }
+    
+    /**
+    DESCR: Requests and downloads the JSON config file from our server
+    INPUT: Requires, two parameters, one is the postURL
+    RET  : the function returns true, it success or false
+    DOC: https://developer.lofelt.com/integrating-haptics/studio-framework-for-ios/#play-haptic-with-audio
+    **/
+    func requestJSONConfig(postURL:URL, expID:NSString){
+        var request = URLRequest(url: postURL)
+        let bodyData = try? JSONSerialization.data(
+            withJSONObject: [
+                "expid": config_id
             ],
             options: []
         )
@@ -244,10 +430,45 @@ class Configuration {
             }
         }
         task.resume()
+
     }
-    
+//    func downloadContent() {
+//        if let url = self.JSONconfig?.short_haptics_file {
+//            let downloadTaskShort = URLSession.shared.downloadTask(with: url) {
+//                        urlOrNil, responseOrNil, errorOrNil in
+//
+//                guard let fileURL = urlOrNil else { return }
+//                do {
+//                    try self.hapticDataShort = NSString(contentsOf: fileURL, encoding: String.Encoding.utf8.rawValue)
+//                    print("downloaded short haptic")
+//                } catch {
+//                    print ("Error Downloading short Haptic from Aws: \(error)")
+//                }
+//            }
+//            downloadTaskShort.resume()
+//        } else {
+//            print("invalid url for short haptics file")
+//        }
+//
+//        if let url = self.JSONconfig?.long_haptics_file {
+//            let downloadTaskLong = URLSession.shared.downloadTask(with: url) {
+//                urlOrNil, responseOrNil, errorOrNil in
+//
+//                guard let fileURL = urlOrNil else { return }
+//                do {
+//                    try self.hapticDataLong = NSString(contentsOf: fileURL, encoding: String.Encoding.utf8.rawValue)
+//                    print("downloaded long haptic")
+//                } catch {
+//                    print ("Error Downloading long Haptic from Aws: \(error)")
+//                }
+//            }
+//            downloadTaskLong.resume()
+//        } else {
+//            print("invalid url for short hapitcs file")
+//        }
+//    }
     func downloadContent() {
-        if let url = self.JSONconfig?.short_haptics_file {
+        if let url = self.JSONconfig?.linkedFiles.shortEffect {
             let downloadTaskShort = URLSession.shared.downloadTask(with: url) {
                         urlOrNil, responseOrNil, errorOrNil in
                         
@@ -264,7 +485,7 @@ class Configuration {
             print("invalid url for short haptics file")
         }
         
-        if let url = self.JSONconfig?.long_haptics_file {
+        if let url = self.JSONconfig?.linkedFiles.longEffect {
             let downloadTaskLong = URLSession.shared.downloadTask(with: url) {
                 urlOrNil, responseOrNil, errorOrNil in
 
