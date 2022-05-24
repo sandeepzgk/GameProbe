@@ -733,7 +733,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "twofortyeight/Preview\\ Content";
-				DEVELOPMENT_TEAM = 35H2RPT2B4;
+				DEVELOPMENT_TEAM = B6YP9U3YR5;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = twofortyeight/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -755,7 +755,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "twofortyeight/Preview\\ Content";
-				DEVELOPMENT_TEAM = 35H2RPT2B4;
+				DEVELOPMENT_TEAM = B6YP9U3YR5;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = twofortyeight/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (

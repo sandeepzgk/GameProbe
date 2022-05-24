@@ -2,3 +2,4 @@ node_modules
 .serverless
 .dynamodb
 buckets
+.DS_Store
