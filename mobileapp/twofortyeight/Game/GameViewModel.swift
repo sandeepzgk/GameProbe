@@ -356,7 +356,7 @@ class Configuration {
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.httpBody = bodyData
-        
+        let semaphore: DispatchSemaphore = DispatchSemaphore(value: 0); //use the semaphore to make the task, request JSON from server a synchronize function call
         let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
             let httpResponse = response as? HTTPURLResponse
             print(httpResponse?.statusCode)
@@ -365,20 +365,21 @@ class Configuration {
                     print("reconnect retry request server")
                     //self.errorMsg = "re request server"
                     self.reconnect_num+=1;
+                    semaphore.signal();
                     DispatchQueue.main.asyncAfter(deadline: .now() + self.secondsToDelay) {
                         print("This message is delayed")
-                        //self.errorMsg = "Retry..."
-                        print("Shown");
                         self.getConfig();
                     }
                 }
                 else {
                     self.errorMsg = "Server is Down"
+                    semaphore.signal();
                 }
                 
             }
             else if (httpResponse?.statusCode == 404){
                 self.errorMsg = "Experiment id is wrong!"
+                semaphore.signal();
             }
             else if (httpResponse?.statusCode == 200){
                 if let data = data {
@@ -392,6 +393,7 @@ class Configuration {
                         print("success request server");
                         self.errorMsg = ""
                         //self.reconnect_num=0;
+                        semaphore.signal();
                         self.downloadContent()
                     }
                     catch {
@@ -401,16 +403,19 @@ class Configuration {
                 } else {
                     print("experiment id is wrong")
                     self.errorMsg = "experiment id is wrong";
+                    semaphore.signal();
                     self.downloadCondition.signal()
                 }
             }
             else{
                 self.errorMsg = "Unkown error";
+                semaphore.signal();
             }
+            
         }
             
         task.resume();
-
+        semaphore.wait()
         
     }
     
