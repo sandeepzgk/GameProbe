@@ -5,11 +5,11 @@ struct GameEntry: View {
 	@State var showLogin: Bool = true
 	@State var showConsent: Bool = false
 	@State var stopGame: Bool = false
-	
+	@State var errorString: String = ""
 	var body: some View {
 		return VStack {
 			if showLogin {
-				LogInView(viewModel: viewModel, showLogin: $showLogin, showConsent: $showConsent, stopGame: $stopGame)
+                LogInView(viewModel: viewModel, showLogin: $showLogin, showConsent: $showConsent, stopGame: $stopGame, errorString: $errorString)
 			}
             else if showConsent {
                 let instructions = viewModel.configuration?.JSONconfig?.userInstructions ?? "No custom instructions :)"
