@@ -26,7 +26,7 @@ function debuglog(str)
 }
 
 
-app.use(express.json());
+app.use(express.json({ limit: '20MB' }));
 app.post("/setExperiment", async function(req, res)
 {
     var instance = req.body;

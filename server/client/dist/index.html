@@ -16,6 +16,7 @@
             let finalResult;
             const Form = JSONSchemaForm.default;
             const urls = ["assets/formschema.json", "assets/formuischema.json"];
+            const lambdaURL = "";
             Promise.all(urls.map(url => fetch(url).then(e => e.json()))).then(data => {
                 finalResult = data.flat();
                 ReactDOM.render(React.createElement(Form, {schema: finalResult[0],uiSchema: finalResult[1],onSubmit: e => setFormData(e.formData)}), document.getElementById("app"));
@@ -66,10 +67,18 @@
             }).catch(err => {throw err}); 
         }
 
+        function initialize()
+        {
+            var xmlhttp=false;
+            loadXMLDoc('assets/server.info');
+            if(xmlhttp==false){ alert("Server configuration not found") }
+            else { lambdaURL= xmlhttp.responseText; }
+        }
+
         </script>
     </head>
 
-    <body onload="renderTable();">
+    <body onload="initialize();">
         <button class="button-24" style="float: right; margin: 40px;" onclick="openModal(); ">+</button>
         <div id="root" class="center" ></div>
         <div id="myModal" class="modal">
