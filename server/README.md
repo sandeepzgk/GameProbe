@@ -35,12 +35,22 @@ This is a document that explains how to run the ```server``` on AWS via Express 
     serverless deploy
     serverless remove   # to remove the deployed services
     ```
-4. To deploy to AWS (Static Files aka Static Web Pages or website)
+    
+4. To export the server environment so that the the webclient "knows" where to call 
+    ```bash
+    serverless info --verbose | grep "endpoint" | grep -P 'http.*' --only-matching  > ./client/dist/assets/server.info
+    ```
+    - This is the file that the webclient loads to find the server URL. This file is ignored from commit, its only used prior to deploying the client. So run this before the next step. 
+    
+
+5. To deploy to AWS (Static Files aka Static Web Pages or website)
     ```bash 
     serverless client deploy
     serverless client remove # to remove the deployed client
-    ```    
-5. To deploy to different environments
+    ```
+
+
+6. To deploy to different environments
 
     _Important Notes_: 
     * By default the deploy happens to the "dev" channel, i.e. development environment of aws for testing. To deploy to production environment execute 
