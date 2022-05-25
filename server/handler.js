@@ -219,7 +219,7 @@ app.post("/getById", async function(req, res)
         FilterExpression: "expid = :expid ",
         ExpressionAttributeValues:
         {
-            ":expid": req.body.expid
+            ":expid": req.body.expid.toString().toUpperCase();
         }
     }
 
