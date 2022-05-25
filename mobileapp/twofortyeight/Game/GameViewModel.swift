@@ -201,6 +201,10 @@ class GameViewModel: ObservableObject {
 //    let max_score: String?
 //}
 
+struct expidError: Codable{
+    let error: String
+}
+
 struct ConfigElement: Codable {
     let interactionType, experimentDescription: String
     let experimentMaxscore: Int
@@ -256,18 +260,22 @@ struct LinkedFiles: Codable {
 class Configuration {
     var JSONconfig: ConfigBody?
     var JSONarray: ConfigArray?
+    var expidErrorJson: expidError?
     let config_id: String
     let downloadCondition: NSCondition
     private var reconnect_num=0;
+    private let MAX_RETRY_NUM = 2;
+    private let secondsToDelay=5.0;
+    var startGameButtonActive=true;
     var downloaded = false {
         didSet {
             if self.downloaded && oldValue == false {
-                errorMsg = nil
+                errorMsg = ""
                 self.downloadCondition.signal()
             }
         }
     }
-    var errorMsg: String?
+     var errorMsg: String?
         
     var hapticDataShort: NSString? {
         didSet {
@@ -341,7 +349,7 @@ class Configuration {
         var request = URLRequest(url: url)
         let bodyData = try? JSONSerialization.data(
             withJSONObject: [
-                "expid": config_id
+                "expid": config_id.uppercased()
             ],
             options: []
         )
@@ -349,42 +357,58 @@ class Configuration {
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.httpBody = bodyData
         
-        var success=false;
-        
         let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
-            if let data = data {
-                let jsonDecoder = JSONDecoder()
-                do {
-                    
-                    self.JSONarray = try jsonDecoder.decode(ConfigArray.self, from: data)
-                    if let config_body = self.JSONarray?[0] {
-                        self.JSONconfig=config_body;
+            let httpResponse = response as? HTTPURLResponse
+            print(httpResponse?.statusCode)
+            if (httpResponse?.statusCode == 503){
+                if(self.reconnect_num<self.MAX_RETRY_NUM){
+                    print("reconnect retry request server")
+                    //self.errorMsg = "re request server"
+                    self.reconnect_num+=1;
+                    DispatchQueue.main.asyncAfter(deadline: .now() + self.secondsToDelay) {
+                        print("This message is delayed")
+                        //self.errorMsg = "Retry..."
+                        print("Shown");
+                        self.getConfig();
                     }
-                    success=true;
-                    self.reconnect_num=0;
-                    self.downloadContent()
                 }
-                catch {
-                    print(error)
-                    if(error.localizedDescription == "The data couldn’t be read because it is missing.") {
-                        self.errorMsg = "invalid experiment id"
-                    } else {
-                        self.errorMsg = "please restart the server"
-                        if(self.reconnect_num<2){
-                            self.reconnect_num+=1;
-                            self.getConfig();
+                else {
+                    self.errorMsg = "Server is Down"
+                }
+                
+            }
+            else if (httpResponse?.statusCode == 404){
+                self.errorMsg = "Experiment id is wrong!"
+            }
+            else if (httpResponse?.statusCode == 200){
+                if let data = data {
+                    let jsonDecoder = JSONDecoder()
+                    do {
+                        print(data);
+                        self.JSONarray = try jsonDecoder.decode(ConfigArray.self, from: data)
+                        if let config_body = self.JSONarray?[0] {
+                            self.JSONconfig=config_body;
                         }
-                        
+                        print("success request server");
+                        self.errorMsg = ""
+                        //self.reconnect_num=0;
+                        self.downloadContent()
                     }
+                    catch {
+                        self.downloadCondition.signal()
+                    }
+                    
+                } else {
+                    print("experiment id is wrong")
+                    self.errorMsg = "experiment id is wrong";
                     self.downloadCondition.signal()
                 }
-                print(success);
-            } else {
-                print("no data returned, server is down")
-                self.errorMsg = "please restart the server"
-                self.downloadCondition.signal()
+            }
+            else{
+                self.errorMsg = "Unkown error";
             }
         }
+            
         task.resume();
 
         
@@ -476,8 +500,10 @@ class Configuration {
                 do {
                     try self.hapticDataShort = NSString(contentsOf: fileURL, encoding: String.Encoding.utf8.rawValue)
                     print("downloaded short haptic")
+                    self.startGameButtonActive=false;
                 } catch {
                     print ("Error Downloading short Haptic from Aws: \(error)")
+                    self.startGameButtonActive=true;
                 }
             }
             downloadTaskShort.resume()
@@ -493,8 +519,10 @@ class Configuration {
                 do {
                     try self.hapticDataLong = NSString(contentsOf: fileURL, encoding: String.Encoding.utf8.rawValue)
                     print("downloaded long haptic")
+                    self.startGameButtonActive=false;
                 } catch {
                     print ("Error Downloading long Haptic from Aws: \(error)")
+                    self.startGameButtonActive=true;
                 }
             }
             downloadTaskLong.resume()

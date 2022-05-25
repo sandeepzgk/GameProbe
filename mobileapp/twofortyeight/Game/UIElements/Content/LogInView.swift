@@ -5,6 +5,7 @@ struct LogInView: View {
 	@Binding var showLogin: Bool
 	@Binding var showConsent:Bool
 	@Binding var stopGame:Bool
+    @Binding var errorString:String
 	@State private var userId: String = ""
 	@State private var experimentId: String = ""
 	
@@ -38,13 +39,21 @@ struct LogInView: View {
 				self.viewModel.experimentId = self.experimentId
 				self.viewModel.userId = self.userId
 				self.viewModel.config_id = self.experimentId
-				self.viewModel.configuration?.getConfig()
+				//self.viewModel.configuration?.getConfig()
 				self.viewModel.reset()
-                if let _ = self.viewModel.configuration?.errorMsg {
-                    self.showLogin = true
-                } else {
-                    self.showConsent = true
-                    self.showLogin = false
+                if let startButtonActive = self.viewModel.configuration?.startGameButtonActive {
+                    if(startButtonActive){
+                        self.showLogin = true
+                    }
+                    else{
+                        self.showConsent = true
+                        self.showLogin = false
+                    }
+                    
+                }
+                if let errorMsg_str = self.viewModel.configuration?.errorMsg {
+                    self.errorString=errorMsg_str;
+                    
                 }
 			}) {
 				Text("Start game")
@@ -63,7 +72,7 @@ struct LogInView: View {
 				Text("Skip >>")
 			}
 			
-            Text(self.viewModel.configuration?.errorMsg ?? "").foregroundColor(Color.red)
+            Text(self.errorString).foregroundColor(Color.red)
 		}
 	}
 }
