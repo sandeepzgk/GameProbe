@@ -820,7 +820,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 74SMNA83A6;
+				DEVELOPMENT_TEAM = B6YP9U3YR5;
 				INFOPLIST_FILE = twofortyeightUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -840,7 +840,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 74SMNA83A6;
+				DEVELOPMENT_TEAM = B6YP9U3YR5;
 				INFOPLIST_FILE = twofortyeightUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
