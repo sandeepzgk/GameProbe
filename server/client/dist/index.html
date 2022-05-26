@@ -44,26 +44,29 @@
             fetch(lambdaServer+"/getByEmail",
                             {
                                 method: "POST",
-                                mode: "no-cors",
+                               
                                 body: JSON.stringify({email: dummyEmail}),
                                 headers: {'Content-Type': 'application/json;charset=utf-8'},
                             }
-            ).then(res => res.body.JSON).then((data) => {
+            ).then(res => res.json()).then((data) => {
                 console.log(data)
-                var temp ="<table class='styled-table'><tr><th>ID</th><th>Description</th><th>Interaction Type</th><th>Survey URL</th></tr>";
+                var temp ="<table class='styled-table'><tr><th>ID</th><th>Description</th><th>Interaction Type</th><th>Max Score</th><th>Survey URL</th></tr>";
                 for( var i=0;i<data.length;i++){
                     temp += "<tr>";
                         temp += "<td>";
-                            temp += data[i].hashs;
+                            temp += data[i].expid;
                         temp += "</td>";
                         temp += "<td>";
-                            temp += data[i].haptic_setup[0].experiment_description;
+                            temp += data[i].experiment_description;
                         temp += "</td>";
                         temp += "<td>";
-                            temp += data[i].haptic_setup[0].interaction_type;
+                            temp += data[i].interaction_type;
                         temp += "</td>";
                         temp += "<td>";
-                            temp += data[i].haptic_setup[0].survey_url;
+                            temp += data[i].experiment_maxscore;
+                        temp += "</td>";
+                        temp += "<td>";
+                            temp += data[i].survey_url;
                         temp += "</td>";
                     temp += "</tr>";   
                 }
