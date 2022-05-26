@@ -18,7 +18,9 @@ This is a document that explains how to run the ```server``` on AWS via Express 
 ## Setting up the Environment (for Ubuntu)
 1.  Execute setup script
     ```bash 
-    setuplocal.bash
+    sudo npm i -g serverless         #install serverless for nodeJS
+    cd server/                      
+    npm install                      #install dependencies for the server from package.json
     ```
 2. Configuring AWS Keys for deployment
 
@@ -30,23 +32,28 @@ This is a document that explains how to run the ```server``` on AWS via Express 
     ```
 
 3. To deploy to AWS (Lambda/S3/DynamoDB or core logic)
+
+    _Important Note_: To update the **_--stage variable_** to the right environment that is being used
     ```bash 
-    npm install         # to install dependencies
-    serverless deploy
-    serverless remove   # to remove the deployed services
+    serverless deploy --stage ******
+    serverless remove --stage ******   # to remove the deployed services
     ```
     
 4. To export the server environment so that the the webclient "knows" where to call 
+
+    _Important Note_: To update the **_--stage variable_** to the right environment that is being used
     ```bash
-    serverval=$(serverless info --verbose | grep "endpoint" | grep -P 'http.*' --only-matching) && echo "let lambdaServer=\""$serverval"\"" > client/dist/assets/server.js
+    serverval=$(serverless info --verbose --stage ****** | grep "endpoint" | grep -P 'http.*' --only-matching) && echo "let lambdaServer=\""$serverval"\"" > client/dist/assets/server.js
     ```
     - This is the file that the webclient loads to find the server URL. This file is ignored from commit, its only used prior to deploying the client. So run this before the next step. Please update the path for ```client/dist/assets/server.js``` as appropriately needed from where you are running this code. 
 
 
 5. To deploy to AWS (Static Files aka Static Web Pages or website)
+
+    _Important Note_: To update the **_--stage variable_** to the right environment that is being used
     ```bash 
-    serverless client deploy
-    serverless client remove # to remove the deployed client
+    serverless client deploy --stage ******
+    serverless client remove --stage ****** # to remove the deployed client
     ```
 
 
