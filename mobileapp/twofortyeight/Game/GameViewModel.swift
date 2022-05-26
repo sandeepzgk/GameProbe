@@ -59,7 +59,7 @@ class GameViewModel: ObservableObject {
     
     public var config_id: String? {
         didSet {
-            print("set config_id: \(config_id)")
+            
             self.configuration = Configuration(config_id: self.config_id!)
             if let max_score=self.configuration?.JSONconfig?.experimentMaxscore {
                 self.MAX_SCORE = max_score
@@ -245,13 +245,13 @@ struct ConfigBody: Codable {
 }
 // MARK: - LinkedFiles
 struct LinkedFiles: Codable {
-    let instructionImage, shortEffect, longEffect, longAudio: URL
-
+    //let instructionImage, shortEffect, longEffect, longAudio: URL
+    let instructionImage, shortEffect, longEffect: URL
     enum CodingKeys: String, CodingKey {
         case instructionImage = "instruction_image"
         case shortEffect = "short_effect"
         case longEffect = "long_effect"
-        case longAudio = "long_audio"
+        //case longAudio = "long_audio"
     }
 }
 
@@ -382,11 +382,13 @@ class Configuration {
                 semaphore.signal();
             }
             else if (httpResponse?.statusCode == 200){
+                print("status code is 200")
                 if let data = data {
                     let jsonDecoder = JSONDecoder()
                     do {
                         print(data);
                         self.JSONarray = try jsonDecoder.decode(ConfigArray.self, from: data)
+                        
                         if let config_body = self.JSONarray?[0] {
                             self.JSONconfig=config_body;
                         }
@@ -397,6 +399,8 @@ class Configuration {
                         self.downloadContent()
                     }
                     catch {
+                        print(error)
+                        semaphore.signal()
                         self.downloadCondition.signal()
                     }
                     

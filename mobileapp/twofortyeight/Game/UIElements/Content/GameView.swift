@@ -13,8 +13,9 @@ struct GameEntry: View {
 			}
             else if showConsent {
                 let instructions = viewModel.configuration?.JSONconfig?.userInstructions ?? "No custom instructions :)"
+                let user_agreements=viewModel.configuration?.JSONconfig?.userAgreements ?? [];
                 let url = viewModel.configuration?.JSONconfig?.linkedFiles.instructionImage ?? URL(string: "https://www.logolynx.com/images/logolynx/7d/7d09a7f18456e08cbf106b89e750bd2d.jpeg")!
-                ConsentPage(showConsent: $showConsent, instructions: instructions, url: url)
+                ConsentPage(showConsent: $showConsent, instructions: instructions, user_agreements:user_agreements, url: url)
 			}
 			else if viewModel.isGameOver {
                 let surveyLink = (self.viewModel.configuration?.JSONconfig?.surveyURL ?? "https://usc.qualtrics.com/jfe/form/SV_dbfaGzKfZzEWETA") + (self.viewModel.hiddenVariables)
