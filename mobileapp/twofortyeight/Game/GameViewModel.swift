@@ -279,7 +279,7 @@ class Configuration {
         
     var hapticDataShort: NSString? {
         didSet {
-            if let _ = self.hapticDataShort, let _ = self.hapticDataLong {
+            if let _ = self.hapticDataShort, let _ = self.hapticDataLong, let _=self.hapticDataInstructionImage {
                 self.downloaded = true
             } else {
                 self.downloaded = false
@@ -289,7 +289,17 @@ class Configuration {
     
     var hapticDataLong: NSString? {
         didSet {
-            if let _ = self.hapticDataShort, let _ = self.hapticDataLong {
+            if let _ = self.hapticDataShort, let _ = self.hapticDataLong, let _=self.hapticDataInstructionImage {
+                self.downloaded = true
+            } else {
+                self.downloaded = false
+            }
+        }
+    }
+    
+    var hapticDataInstructionImage: NSString? {
+        didSet {
+            if let _ = self.hapticDataShort, let _ = self.hapticDataLong, let _=self.hapticDataInstructionImage {
                 self.downloaded = true
             } else {
                 self.downloaded = false
@@ -535,6 +545,26 @@ class Configuration {
                 }
             }
             downloadTaskLong.resume()
+        } else {
+            print("invalid url for short hapitcs file")
+        }
+        
+        if let url = self.JSONconfig?.linkedFiles.instructionImage {
+            let downloadTaskImage = URLSession.shared.downloadTask(with: url) {
+                urlOrNil, responseOrNil, errorOrNil in
+
+                guard let fileURL = urlOrNil else { return }
+                do {
+                    try self.hapticDataInstructionImage = NSString(contentsOf: fileURL, encoding: String.Encoding.utf8.rawValue)
+                    print("downloaded haptic instruction image")
+                    print(fileURL)
+                    self.startGameButtonActive=false;
+                } catch {
+                    print ("Error Downloading Haptic instruction image from Aws: \(error)")
+                    self.startGameButtonActive=true;
+                }
+            }
+            downloadTaskImage.resume()
         } else {
             print("invalid url for short hapitcs file")
         }
