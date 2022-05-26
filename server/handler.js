@@ -148,9 +148,7 @@ app.post("/setExperiment", async function(req, res)
 
 app.post("/getByEmail", async function(req, res)
 {
-    console.log("----------------")
-    console.log(req)
-    console.log("----------------")
+   
     const getParams = {
         TableName: DATA_TABLE,
         FilterExpression: "email = :email",
@@ -159,9 +157,6 @@ app.post("/getByEmail", async function(req, res)
             ":email": req.body.email
         }
     }
-    // console.log(req.apiGateway.body.email);
-    //  console.log(req.apiGateway.body.email);
-    // console.log(159);
     try
     {
         const Item = await dynamoDbClient.scan(getParams).promise().then(
