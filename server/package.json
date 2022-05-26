@@ -15,6 +15,6 @@
     "serverless-dynamodb-local": "^0.2.40",
     "serverless-finch": "^4.0.0",
     "serverless-offline": "^8.7.0",
-    "serverless-s3-local": "^0.6.22"
+    "serverless-s3-local": "^0.6.1"
   }
 }
