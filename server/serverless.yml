@@ -77,7 +77,4 @@ resources:
         BucketName: ${self:custom.bucketName}
     
 plugins:
-  - serverless-dynamodb-local
-  - serverless-offline
-  - serverless-s3-local
   - serverless-finch
