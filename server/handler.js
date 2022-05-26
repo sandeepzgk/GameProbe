@@ -26,7 +26,7 @@ function debuglog(str)
 }
 
 
-app.use(express.json({ limit: '20MB' }));
+app.use(express.json({ limit: '20MB' })); //To enable larger file upload upto 20M
 app.use(cors());
 app.post("/setExperiment", async function(req, res)
 {

@@ -16,7 +16,7 @@ This is a document that explains how to run the ```server``` on AWS via Express 
 
 
 ## Setting up the Environment (for Ubuntu)
-1.  Execute setup script
+1.  Execute setup pre-requisites, please install nodeJS first
     ```bash 
     sudo npm i -g serverless         #install serverless for nodeJS
     cd server/                      
@@ -30,34 +30,38 @@ This is a document that explains how to run the ```server``` on AWS via Express 
     export AWS_ACCESS_KEY_ID="YOUR_KEY_ID"
     export AWS_SECRET_ACCESS_KEY="YOUR_AWS_SECRET_KEY"
     ```
+3. Perform serverless login
+    ```bash
+    serverless login
+    ````
 
-3. To deploy to AWS (Lambda/S3/DynamoDB or core logic)
+4. To deploy to AWS (Lambda/S3/DynamoDB or core logic)
 
-    _Important Note_: To update the **_--stage variable_** to the right environment that is being used
+    _Important Note_: To update the ```******``` **_--stage variable_** to the right environment that is being used
     ```bash 
     serverless deploy --stage ******
     serverless remove --stage ******   # to remove the deployed services
     ```
     
-4. To export the server environment so that the the webclient "knows" where to call 
+5. To export the server environment so that the the webclient "knows" where to call 
 
-    _Important Note_: To update the **_--stage variable_** to the right environment that is being used
+    _Important Note_: To update the ```******``` **_--stage variable_** to the right environment that is being used
     ```bash
     serverval=$(serverless info --verbose --stage ****** | grep "endpoint" | grep -P 'http.*' --only-matching) && echo "let lambdaServer=\""$serverval"\"" > client/dist/assets/server.js
     ```
     - This is the file that the webclient loads to find the server URL. This file is ignored from commit, its only used prior to deploying the client. So run this before the next step. Please update the path for ```client/dist/assets/server.js``` as appropriately needed from where you are running this code. 
 
 
-5. To deploy to AWS (Static Files aka Static Web Pages or website)
+6. To deploy to AWS (Static Files aka Static Web Pages or website)
 
-    _Important Note_: To update the **_--stage variable_** to the right environment that is being used
+    _Important Note_: To update the ```******``` **_--stage variable_** to the right environment that is being used
     ```bash 
     serverless client deploy --stage ******
     serverless client remove --stage ****** # to remove the deployed client
     ```
 
 
-6. To deploy to different environments
+7. To deploy to different environments
 
     _Important Notes_: 
     * By default the deploy happens to the "dev" channel, i.e. development environment of aws for testing. To deploy to production environment execute 
