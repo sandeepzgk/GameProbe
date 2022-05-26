@@ -9,14 +9,13 @@
         <script src="//unpkg.com/@rjsf/core/dist/react-jsonschema-form.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <link rel="stylesheet" href="assets/corestyle.css" />
-       
+        <script src="assets/server.js"></script>
        <script>
+        let dummyEmail = "testhaptics@gmail.com"
         function displayForm() {
-            let serverURL="http://localhost:3000/";
             let finalResult;
             const Form = JSONSchemaForm.default;
             const urls = ["assets/formschema.json", "assets/formuischema.json"];
-            const lambdaURL = "";
             Promise.all(urls.map(url => fetch(url).then(e => e.json()))).then(data => {
                 finalResult = data.flat();
                 ReactDOM.render(React.createElement(Form, {schema: finalResult[0],uiSchema: finalResult[1],onSubmit: e => setFormData(e.formData)}), document.getElementById("app"));
@@ -37,13 +36,19 @@
 
         function closeModal() {
             renderTable();
-            var modal = document.getElementById("myModal");
-            
+            var modal = document.getElementById("myModal");            
             modal.style.display = "none";
         }
         
         function renderTable(){       
-            fetch("assets/dummy.json").then(res => res.json()).then((data) => {
+            fetch(lambdaServer+"/getByEmail",
+                            {
+                                method: "POST",
+                                mode: "no-cors",
+                                body: JSON.stringify({email: dummyEmail}),
+                                headers: {'Content-Type': 'application/json;charset=utf-8'},
+                            }
+            ).then(res => res.body.JSON).then((data) => {
                 console.log(data)
                 var temp ="<table class='styled-table'><tr><th>ID</th><th>Description</th><th>Interaction Type</th><th>Survey URL</th></tr>";
                 for( var i=0;i<data.length;i++){
@@ -64,15 +69,22 @@
                 }
                 temp +="</table>"
                 $('#root').html(temp)
-            }).catch(err => {throw err}); 
+            }).catch(err => {
+                console.log(err);
+                throw err}); 
         }
 
         function initialize()
         {
-            var xmlhttp=false;
-            loadXMLDoc('assets/server.info');
-            if(xmlhttp==false){ alert("Server configuration not found") }
-            else { lambdaURL= xmlhttp.responseText; }
+            //check if server variable is available
+            if (lambdaServer == null)
+            {
+                alert("server url is not defined");
+            }
+            else
+            {
+                renderTable();
+            }
         }
 
         </script>

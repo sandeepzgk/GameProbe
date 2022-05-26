@@ -38,10 +38,10 @@ This is a document that explains how to run the ```server``` on AWS via Express 
     
 4. To export the server environment so that the the webclient "knows" where to call 
     ```bash
-    serverless info --verbose | grep "endpoint" | grep -P 'http.*' --only-matching  > ./client/dist/assets/server.info
+    serverval=$(serverless info --verbose | grep "endpoint" | grep -P 'http.*' --only-matching) && echo "let lambdaServer=\""$serverval"\"" > client/dist/assets/server.js
     ```
-    - This is the file that the webclient loads to find the server URL. This file is ignored from commit, its only used prior to deploying the client. So run this before the next step. 
-    
+    - This is the file that the webclient loads to find the server URL. This file is ignored from commit, its only used prior to deploying the client. So run this before the next step. Please update the path for ```client/dist/assets/server.js``` as appropriately needed from where you are running this code. 
+
 
 5. To deploy to AWS (Static Files aka Static Web Pages or website)
     ```bash 

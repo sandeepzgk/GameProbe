@@ -53,6 +53,7 @@ functions:
     handler: handler.handler
     events:
       - httpApi: '*'
+      - cors: true
 
 resources:
   Resources:
