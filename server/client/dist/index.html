@@ -2,6 +2,11 @@
 <html lang="en" class="">
     <head>
         <meta charset="UTF-8" />
+        
+        <meta name="google-signin-scope" content="profile email">
+        <meta name="google-signin-client_id" content="350655354040-jcb0ecc1rq659on0hkj4e3o95g5vt794.apps.googleusercontent.com">
+        <script src="https://apis.google.com/js/platform.js" async defer></script>
+        <script src="https://apis.google.com/js/platform.js?onload=onLoad" async defer></script>
 
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
         <script src="//cdnjs.cloudflare.com/ajax/libs/react/17.0.2/umd/react.production.min.js"></script>
@@ -10,8 +15,39 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <link rel="stylesheet" href="assets/corestyle.css" />
         <script src="assets/server.js"></script>
+        
        <script>
+           
+  
         let dummyEmail = "testhaptics@gmail.com"
+
+        //Google OAuth - start
+        let userEmail =""
+
+        function onLoad() {
+        gapi.load('auth2', function() {
+            gapi.auth2.init();
+            });
+        }
+        
+        function onSignIn(googleUser) {
+    	    let profile = googleUser.getBasicProfile();
+    	    let name=profile.getName();
+    	    userEmail=profile.getEmail();
+        }
+
+
+        
+        function signOut() {
+            let auth2 = gapi.auth2.getAuthInstance();
+            auth2.signOut().then(function () {
+            console.log('User signed out.');
+        });
+        }
+        //Google OAuth - end
+
+
+
         function displayForm() {
             let finalResult;
             const Form = JSONSchemaForm.default;
@@ -25,8 +61,9 @@
         function setFormData(formData)
         {
             //Initial Fetch Test
+
             console.log(formData)
-            
+
             fetch(lambdaServer+"/setExperiment",
                             {
                                 method: "POST",
@@ -41,6 +78,7 @@
             .catch((error) => {
                 console.error('Error:', error);
             });
+
 
             renderTable();
         }
@@ -57,7 +95,10 @@
             modal.style.display = "none";
         }
         
-        function renderTable(){       
+        function renderTable(){  
+            
+           
+
             fetch(lambdaServer+"/getByEmail",
                             {
                                 method: "POST",
@@ -111,6 +152,12 @@
     </head>
 
     <body onload="initialize();">
+        <div class="g-signin2" data-onsuccess="onSignIn" data-theme="dark"></div>
+        <br/>
+        <br/>
+        <a href="#" onclick="signOut();">Sign out</a>
+
+     
         <button class="button-24" style="float: right; margin: 40px;" onclick="openModal(); ">+</button>
         <div id="root" class="center" ></div>
         <div id="myModal" class="modal">
