@@ -50,11 +50,14 @@ provider:
     CLIENT_ID: ${param:GOOG_CLIENT_ID}
     CLIENT_SECRET: ${param:GOOG_CLIENT_SECRET}
 
+    
+
 functions:
   api:
     handler: handler.handler
     events:
       - httpApi: '*'
+      - cors: true
 
 resources:
   Resources:
@@ -79,4 +82,8 @@ resources:
         BucketName: ${self:custom.bucketName}
     
 plugins:
+  - serverless-dynamodb-local
+  - serverless-offline
+  - serverless-s3-local
   - serverless-finch
+

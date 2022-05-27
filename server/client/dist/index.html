@@ -24,7 +24,24 @@
 
         function setFormData(formData)
         {
-            console.log(formData.survey_url);
+            //Initial Fetch Test
+            console.log(formData)
+            
+            fetch(lambdaServer+"/setExperiment",
+                            {
+                                method: "POST",
+                               
+                                body: JSON.stringify(formData),
+                                headers: {'Content-Type': 'application/json;charset=utf-8'},
+                            }
+            ).then(response => response.json())
+            .then(formData => {
+                    console.log('Success:', formData);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+
             renderTable();
         }
 
