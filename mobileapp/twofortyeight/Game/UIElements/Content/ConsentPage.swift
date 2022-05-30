@@ -11,6 +11,7 @@ import URLImage
 
 struct ConsentPage: View {
 	@Binding var showConsent:Bool
+    @Binding var showInstruction:Bool
 	@State private var agreed = false
 	@State private var holdPhone = false
     
@@ -27,7 +28,7 @@ struct ConsentPage: View {
 					.resizable()
 					.aspectRatio(contentMode: .fit)
 			}
-            ConsentAgreement(showConsent: $showConsent, instructions: instructions, user_agreements:user_agreements)
+            ConsentAgreement(showConsent: $showConsent,showInstruction: $showInstruction, instructions: instructions, user_agreements:user_agreements)
 				.padding([.leading], 4)
 		}
 	}
@@ -36,14 +37,16 @@ struct ConsentPage: View {
 struct ConsentAgreement: View {
 	@Environment(\.colorScheme) var colorScheme
 	@Binding var showConsent:Bool
+    @Binding var showInstruction:Bool
 	@State private var agreed = false
 	@State private var holdPhone = false
     @State private var marks:[Bool] //checkboxs state list, true==checked, false==unchecked  for user_agreements
     let instructions: String
     let user_agreements: [String]
     
-    init(showConsent: Binding<Bool>, instructions: String, user_agreements:[String]){
+    init(showConsent: Binding<Bool>,showInstruction: Binding<Bool>, instructions: String, user_agreements:[String]){
         _showConsent=showConsent
+        _showInstruction=showInstruction
         self.instructions=instructions
         self.user_agreements=user_agreements
         
@@ -81,6 +84,7 @@ struct ConsentAgreement: View {
             
 			Button(action: {
 				self.showConsent = false
+                self.showInstruction = true
 			}) {
 				Text("OK")
 			}

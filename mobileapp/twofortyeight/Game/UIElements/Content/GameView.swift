@@ -4,6 +4,7 @@ struct GameEntry: View {
 	@ObservedObject var viewModel: GameViewModel
 	@State var showLogin: Bool = true
 	@State var showConsent: Bool = false
+    @State var showInstruction:Bool = false
 	@State var stopGame: Bool = false
 	@State var errorString: String = ""
 	var body: some View {
@@ -15,8 +16,12 @@ struct GameEntry: View {
                 let instructions = viewModel.configuration?.JSONconfig?.userInstructions ?? "No custom instructions :)"
                 let user_agreements=viewModel.configuration?.JSONconfig?.userAgreements ?? [];
                 let url = viewModel.configuration?.JSONconfig?.linkedFiles.instructionImage ?? URL(string: "https://www.logolynx.com/images/logolynx/7d/7d09a7f18456e08cbf106b89e750bd2d.jpeg")!
-                ConsentPage(showConsent: $showConsent, instructions: instructions, user_agreements:user_agreements, url: url)
+                ConsentPage(showConsent: $showConsent,showInstruction: $showInstruction, instructions: instructions, user_agreements:user_agreements, url: url)
 			}
+            else if showInstruction {
+                let instructions = viewModel.configuration?.JSONconfig?.userInstructions ?? "No custom instructions:)"
+                InstructionPage(showInstruction: $showInstruction, user_instructions:instructions)
+            }
 			else if viewModel.isGameOver {
                 let surveyLink = (self.viewModel.configuration?.JSONconfig?.surveyURL ?? "https://usc.qualtrics.com/jfe/form/SV_dbfaGzKfZzEWETA") + (self.viewModel.hiddenVariables)
                 GameOverView(score: self.viewModel.state.score, moves: self.viewModel.numberOfMoves, surveyLink: surveyLink) {

@@ -15,6 +15,7 @@
 		1E5FD51827AC7C1C00E9CAF8 /* Achievement_1.haptic in Resources */ = {isa = PBXBuildFile; fileRef = 1E5FD51627AC7C1C00E9CAF8 /* Achievement_1.haptic */; };
 		1E5FD51927AC7C1C00E9CAF8 /* Contents.json in Resources */ = {isa = PBXBuildFile; fileRef = 1E5FD51727AC7C1C00E9CAF8 /* Contents.json */; };
 		1E68CF3C27FD22800068FEBA /* DeviceKit in Frameworks */ = {isa = PBXBuildFile; productRef = 1E68CF3B27FD22800068FEBA /* DeviceKit */; };
+		43C5E0072845523F00B7D4D1 /* InstructionPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43C5E0062845523F00B7D4D1 /* InstructionPage.swift */; };
 		EB2AE08D2328153200A0D911 /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB2AE08C2328153200A0D911 /* GameViewController.swift */; };
 		EB2AE08F232826AE00A0D911 /* Swipe.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB2AE08E232826AE00A0D911 /* Swipe.swift */; };
 		EB33775A23330C7A000D8850 /* HeaderBarTitle.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB33775923330C7A000D8850 /* HeaderBarTitle.swift */; };
@@ -96,6 +97,7 @@
 		1E5FD51027AC757300E9CAF8 /* LofeltHaptics.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = LofeltHaptics.xcframework; sourceTree = "<group>"; };
 		1E5FD51627AC7C1C00E9CAF8 /* Achievement_1.haptic */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Achievement_1.haptic; sourceTree = "<group>"; };
 		1E5FD51727AC7C1C00E9CAF8 /* Contents.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Contents.json; sourceTree = "<group>"; };
+		43C5E0062845523F00B7D4D1 /* InstructionPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstructionPage.swift; sourceTree = "<group>"; };
 		EB2AE08C2328153200A0D911 /* GameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
 		EB2AE08E232826AE00A0D911 /* Swipe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Swipe.swift; sourceTree = "<group>"; };
 		EB33775923330C7A000D8850 /* HeaderBarTitle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderBarTitle.swift; sourceTree = "<group>"; };
@@ -371,6 +373,7 @@
 				EBFADE502328587F00E53800 /* GameView.swift */,
 				FD5F5BAD27F94F560097C5E9 /* LogInView.swift */,
 				FD09356B27FBBBA600A78B0A /* ConsentPage.swift */,
+				43C5E0062845523F00B7D4D1 /* InstructionPage.swift */,
 			);
 			path = Content;
 			sourceTree = "<group>";
@@ -560,6 +563,7 @@
 				EB33775C2333244B000D8850 /* Moves.swift in Sources */,
 				EB74889F232876930043DF64 /* GameOverView.swift in Sources */,
 				EBC999FC23259388006BA2E7 /* Tile.swift in Sources */,
+				43C5E0072845523F00B7D4D1 /* InstructionPage.swift in Sources */,
 				EB7488A323287D090043DF64 /* ActionButton.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
