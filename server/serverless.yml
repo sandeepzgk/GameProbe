@@ -47,6 +47,8 @@ provider:
     DATA_TABLE: ${self:custom.tableName}
     STORAGE_BUCKET: ${self:custom.bucketName}
     REGION: "us-east-1"
+    CLIENT_ID: ${param:GOOG_CLIENT_ID}
+    CLIENT_SECRET: ${param:GOOG_CLIENT_SECRET}
 
 functions:
   api:
