@@ -83,11 +83,12 @@ app.post("/setExperiment", async function(req, res)
                 if(instance.linked_files[Object.keys(instance.linked_files)[i]]!="") //Only upload files that have values.
                 {
                     var fileData = instance.linked_files[Object.keys(instance.linked_files)[i]].split(";")[2]; //extracting the last part of the upload , i.e. in the above example "base64,dHdvdHdvdHdv"
-                    var fileBody = Buffer.from(fileData.split(",")[1], 'base64').toString('binary'); // converting fileData after splitting the base64 header to binary object for s3 upload
+                    var fileBody = Buffer.from(fileData.split(",")[1], 'base64'); // converting fileData after splitting the base64 header to binary object for s3 upload
                     await s3.upload(
                         {
                             Bucket: STORAGE_BUCKET,
                             Key: s3Key ,
+                            ContentEncoding: 'base64',
                             Body: fileBody
                         }).promise()
                         .then(function(data) 
