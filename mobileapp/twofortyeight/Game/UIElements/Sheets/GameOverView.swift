@@ -27,7 +27,6 @@ struct GameOverView: View {
 						.font(.system(size: 40, weight: .medium, design: .rounded))
 						.foregroundColor(.blue)
 				} else {
-					// Fallback on earlier versions
 				}
                 ActionButton(title: "NEW GAME", action: action)
             }.padding()

@@ -8,15 +8,18 @@
 
 import SwiftUI
 import URLImage
+import LofeltHaptics
 struct InstructionPage: View {
     @Binding var showInstruction:Bool
+    var viewModel:GameViewModel
     let user_instructions: String
+    let url:URL
     
     var body: some View {
         VStack(spacing: 0) {
             HeaderBarTitle(title: "GAME INSTRUCTION", size: 20)
         
-            URLImage(URL(string: "https://images.pexels.com/photos/36445/rose-close-up-pink-flower.jpg")!) { image in
+            URLImage(url) { image in
                 image
                     .resizable()
                     .aspectRatio(contentMode: .fit)
@@ -25,6 +28,7 @@ struct InstructionPage: View {
             
             Button(action: {
                 self.showInstruction = false
+                self.viewModel.GameStart = true
             }) {
                 Text("OK")
             }

@@ -2,6 +2,7 @@ import Combine
 import UIKit
 import LofeltHaptics
 import DeviceKit
+import AVFoundation
 
 class GameViewModel: ObservableObject {
     private(set) var engine: Engine
@@ -27,12 +28,16 @@ class GameViewModel: ObservableObject {
     public var hiddenVariables: String
     var configHiddenVariablesDone = false
     var userHiddenVariablesDone = false
+    public var GameStart = false
+    var playLongEffect = true
     
 	public var MAX_SCORE = 40
   
     @Published var isGameOver = false {
         didSet {
-            if isGameOver {
+            if isGameOver&&playLongEffect&&GameStart {
+                playLongEffect = false
+                print("play haptic long effect")
                 if let hapticData = self.configuration?.hapticDataLong {
                     self.playHaptic(hapticData: hapticData)
                 }
@@ -146,15 +151,31 @@ class GameViewModel: ObservableObject {
     }
 
     func push(_ direction: Direction) {
-        let result = engine.push(state.board, to: direction)
-        let boardHasChanged = !state.board.isEqual(result.newBoard)
-        state = stateTracker.next(with: (result.newBoard, state.score + result.scoredPoints))
-        if boardHasChanged {
-            addNumber()
-        }
-        if result.scoredPoints > 0 {
-            if let hapticData = self.configuration?.hapticDataShort {
-                playHaptic(hapticData: hapticData)
+        if(!isGameOver){
+            let result = engine.push(state.board, to: direction)
+            let boardHasChanged = !state.board.isEqual(result.newBoard)
+            state = stateTracker.next(with: (result.newBoard, state.score + result.scoredPoints))
+            if boardHasChanged {
+                if(GameStart){
+                    
+                    if let hapticData = self.configuration?.hapticDataShort {
+                        print("play haptic short effect")
+                        playHaptic(hapticData: hapticData)
+                    }
+                    if let shortAudio = self.configuration?.shortAudioPlayer {
+                        print("play short audio")
+                        shortAudio.seek(to: CMTime.zero)
+                        shortAudio.play();
+                    }
+                    
+                }
+                
+                addNumber()
+                
+                
+            }
+            if result.scoredPoints > 0 {
+                
             }
         }
     }
@@ -183,6 +204,8 @@ class GameViewModel: ObservableObject {
     func reset() {
         state = stateTracker.reset(with: (engine.blankBoard, .zero))
         addNumber()
+        GameStart = false
+        playLongEffect = true
     }
     
     func eraseBestScore() {
@@ -245,13 +268,14 @@ struct ConfigBody: Codable {
 }
 // MARK: - LinkedFiles
 struct LinkedFiles: Codable {
-    //let instructionImage, shortEffect, longEffect, longAudio: URL
-    let instructionImage, shortEffect, longEffect: URL
+    let instructionImage, shortEffect, longEffect, longAudio, shortAudio: URL
+    //let instructionImage, shortEffect, longEffect: URL
     enum CodingKeys: String, CodingKey {
         case instructionImage = "instruction_image"
         case shortEffect = "short_effect"
         case longEffect = "long_effect"
-        //case longAudio = "long_audio"
+        case longAudio = "long_audio"
+        case shortAudio = "short_audio"
     }
 }
 
@@ -267,6 +291,13 @@ class Configuration {
     private let MAX_RETRY_NUM = 2;
     private let secondsToDelay=5.0;
     var startGameButtonActive=true;
+    
+    var shortAudioPlayer: AVPlayer?
+    var shortAudioPlayerItem:AVPlayerItem?
+    
+    var longAudioPlayer: AVPlayer?
+    var longAudioPlayerItem:AVPlayerItem?
+    
     var downloaded = false {
         didSet {
             if self.downloaded && oldValue == false {
@@ -279,7 +310,7 @@ class Configuration {
         
     var hapticDataShort: NSString? {
         didSet {
-            if let _ = self.hapticDataShort, let _ = self.hapticDataLong, let _=self.hapticDataInstructionImage {
+            if let _ = self.hapticDataShort, let _ = self.hapticDataLong{
                 self.downloaded = true
             } else {
                 self.downloaded = false
@@ -289,17 +320,7 @@ class Configuration {
     
     var hapticDataLong: NSString? {
         didSet {
-            if let _ = self.hapticDataShort, let _ = self.hapticDataLong, let _=self.hapticDataInstructionImage {
-                self.downloaded = true
-            } else {
-                self.downloaded = false
-            }
-        }
-    }
-    
-    var hapticDataInstructionImage: NSString? {
-        didSet {
-            if let _ = self.hapticDataShort, let _ = self.hapticDataLong, let _=self.hapticDataInstructionImage {
+            if let _ = self.hapticDataShort, let _ = self.hapticDataLong {
                 self.downloaded = true
             } else {
                 self.downloaded = false
@@ -392,7 +413,8 @@ class Configuration {
                 semaphore.signal();
             }
             else if (httpResponse?.statusCode == 200){
-                print("status code is 200")
+                
+                
                 if let data = data {
                     let jsonDecoder = JSONDecoder()
                     do {
@@ -475,41 +497,7 @@ class Configuration {
         task.resume()
 
     }
-//    func downloadContent() {
-//        if let url = self.JSONconfig?.short_haptics_file {
-//            let downloadTaskShort = URLSession.shared.downloadTask(with: url) {
-//                        urlOrNil, responseOrNil, errorOrNil in
-//
-//                guard let fileURL = urlOrNil else { return }
-//                do {
-//                    try self.hapticDataShort = NSString(contentsOf: fileURL, encoding: String.Encoding.utf8.rawValue)
-//                    print("downloaded short haptic")
-//                } catch {
-//                    print ("Error Downloading short Haptic from Aws: \(error)")
-//                }
-//            }
-//            downloadTaskShort.resume()
-//        } else {
-//            print("invalid url for short haptics file")
-//        }
-//
-//        if let url = self.JSONconfig?.long_haptics_file {
-//            let downloadTaskLong = URLSession.shared.downloadTask(with: url) {
-//                urlOrNil, responseOrNil, errorOrNil in
-//
-//                guard let fileURL = urlOrNil else { return }
-//                do {
-//                    try self.hapticDataLong = NSString(contentsOf: fileURL, encoding: String.Encoding.utf8.rawValue)
-//                    print("downloaded long haptic")
-//                } catch {
-//                    print ("Error Downloading long Haptic from Aws: \(error)")
-//                }
-//            }
-//            downloadTaskLong.resume()
-//        } else {
-//            print("invalid url for short hapitcs file")
-//        }
-//    }
+
     func downloadContent() {
         if let url = self.JSONconfig?.linkedFiles.shortEffect {
             let downloadTaskShort = URLSession.shared.downloadTask(with: url) {
@@ -546,27 +534,24 @@ class Configuration {
             }
             downloadTaskLong.resume()
         } else {
-            print("invalid url for short hapitcs file")
+            print("invalid url for long hapitcs file")
         }
         
-        if let url = self.JSONconfig?.linkedFiles.instructionImage {
-            let downloadTaskImage = URLSession.shared.downloadTask(with: url) {
-                urlOrNil, responseOrNil, errorOrNil in
-
-                guard let fileURL = urlOrNil else { return }
-                do {
-                    try self.hapticDataInstructionImage = NSString(contentsOf: fileURL, encoding: String.Encoding.utf8.rawValue)
-                    print("downloaded haptic instruction image")
-                    print(fileURL)
-                    self.startGameButtonActive=false;
-                } catch {
-                    print ("Error Downloading Haptic instruction image from Aws: \(error)")
-                    self.startGameButtonActive=true;
-                }
+        if let url = self.JSONconfig?.linkedFiles.shortAudio {
+            do{
+                //let url2 = URL(string: "https://s3.amazonaws.com/kargopolov/kukushka.mp3")
+                //let url3 = URL(string: "http://vtgame-web-bucket-dev.s3-website-us-east-1.amazonaws.com/short.wav")
+                let url3 = URL(string: "http://vtgame-web-bucket-dev.s3-website-us-east-1.amazonaws.com/noise.wav")
+                self.shortAudioPlayerItem = AVPlayerItem(url: url3!);
+                self.shortAudioPlayer = AVPlayer(playerItem: self.shortAudioPlayerItem);
+                self.shortAudioPlayer?.volume = 1.0;
+            } catch{
+                print(error);
             }
-            downloadTaskImage.resume()
+            
         } else {
-            print("invalid url for short hapitcs file")
+            print("invalid url for short audio file")
         }
+        
     }
 }

@@ -39,7 +39,7 @@ struct LogInView: View {
 				self.viewModel.experimentId = self.experimentId
 				self.viewModel.userId = self.userId
 				self.viewModel.config_id = self.experimentId
-				//self.viewModel.configuration?.getConfig()
+				self.viewModel.configuration?.getConfig()
 				self.viewModel.reset()
                 if let startButtonActive = self.viewModel.configuration?.startGameButtonActive {
                     if(startButtonActive){

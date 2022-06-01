@@ -20,11 +20,15 @@ struct GameEntry: View {
 			}
             else if showInstruction {
                 let instructions = viewModel.configuration?.JSONconfig?.userInstructions ?? "No custom instructions:)"
-                InstructionPage(showInstruction: $showInstruction, user_instructions:instructions)
+                let url = viewModel.configuration?.JSONconfig?.linkedFiles.instructionImage ?? URL(string: "https://www.logolynx.com/images/logolynx/7d/7d09a7f18456e08cbf106b89e750bd2d.jpeg")!
+                InstructionPage(showInstruction: $showInstruction,viewModel: self.viewModel ,user_instructions:instructions, url: url)
             }
 			else if viewModel.isGameOver {
                 let surveyLink = (self.viewModel.configuration?.JSONconfig?.surveyURL ?? "https://usc.qualtrics.com/jfe/form/SV_dbfaGzKfZzEWETA") + (self.viewModel.hiddenVariables)
                 GameOverView(score: self.viewModel.state.score, moves: self.viewModel.numberOfMoves, surveyLink: surveyLink) {
+                    showLogin=true
+                    showConsent=false
+                    showInstruction=false
 					self.viewModel.reset()
 				}
 			}
