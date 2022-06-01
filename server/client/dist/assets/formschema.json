@@ -56,7 +56,9 @@
 			"type": "object",
 			"required": [
 				"long_effect",
+                "long_audio",
 				"short_effect",
+                "short_audio",
 				"instruction_image"
 			],
 			"properties": {
@@ -70,16 +72,17 @@
 					"type": "string",
 					"format": "data-url"
 				},
-				"short_audio": {
+                "short_effect": {
 					"title": "Short Effect Haptic File",
 					"type": "string",
 					"format": "data-url"
 				},
-				"short_effect": {
+				"short_audio": {
 					"title": "Short Effect Audio File",
 					"type": "string",
 					"format": "data-url"
 				},
+				
 				"instruction_image": {
 					"title": "Additional Instruction Image",
 					"type": "string",

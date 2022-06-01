@@ -11,12 +11,12 @@
 
 	"long_effect": {
 		"ui:options": {
-			"accept": ".haptics"
+			"accept": ".haptic"
 		}
 	},
 	"short_effect": {
 		"ui:options": {
-			"accept": ".haptics"
+			"accept": ".haptic"
 		}
 	},
 	"short_audio": {
