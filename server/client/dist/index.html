@@ -21,7 +21,8 @@
             google.accounts.id.initialize({
                 client_id: '350655354040-jcb0ecc1rq659on0hkj4e3o95g5vt794.apps.googleusercontent.com',
                 cancel_on_tap_outside: false,
-                prompt_parent_id:"root",
+                prompt_parent_id:"g_id_signin",
+                allowed_parent_origin: "http://vtgame-web-bucket-richard.s3-website-us-east-1.amazonaws.com/"
             });
 
             google.accounts.id.prompt((notification)=>{
