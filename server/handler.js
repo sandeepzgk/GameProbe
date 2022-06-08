@@ -3,6 +3,11 @@ const Validator = require("jsonschema").Validator;
 const express = require("express");
 const serverless = require("serverless-http");
 const cors = require("cors");
+
+//add jwt
+const jwt = require('jsonwebtoken');
+
+
 AWS.config.update(
 {
     region: process.env.REGION
@@ -30,12 +35,18 @@ app.use(express.json({ limit: '20MB' })); //To enable larger file upload upto 20
 app.use(cors());
 app.post("/setExperiment", async function(req, res)
 {
+    const {body} = req;
+    const {email} = body;
+    const token = jwt.sign({email: email }, CLIENT_SECRET); //only payload should be 'email'
+    const verify = jwt.verify(token, CLIENT_SECRET)
+    console.log(verify) // need to test
+
     var instance = req.body;
     debuglog("Instance: ",instance);
     debuglog(JSON.stringify(instance));
     var v = new Validator();
     var validation_result = v.validate(instance, db_schema);
-    if (validation_result.valid)
+    if (validation_result.valid && verify) // need to test
     {
         debuglog("Validation Success");
         try
