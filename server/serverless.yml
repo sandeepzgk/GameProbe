@@ -6,6 +6,8 @@ frameworkVersion: '3'
 custom:
   tableName: 'vtgame-data-table-${sls:stage}'
   bucketName: 'vtgame-file-bucket-${sls:stage}'
+  certificateARN: 'arn:aws:acm:us-east-1:660305772416:certificate/a860633a-6b53-492a-851b-35d8b762b3bb'
+  deployDomain: 'game-${sls:stage}.skoll.me'
   dynamodb:
     start:
       migrate: false
@@ -77,6 +79,81 @@ resources:
       Type: AWS::S3::Bucket
       Properties:
         BucketName: ${self:custom.bucketName}
+    ClientBucketResource:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.client.bucketName}        
+    ClientBucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket: ${self:custom.client.bucketName}
+        PolicyDocument:
+          Statement:
+            - Sid: OAIGetObject
+              Effect: Allow
+              Principal:
+                AWS:
+                  Fn::Join:
+                    - " "
+                    - - arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity
+                      - Ref: S3OriginAccessIdentity
+              Action:
+                - s3:GetObject
+              Resource:
+                Fn::Join:
+                  - ""
+                  - - "arn:aws:s3:::"
+                    - Ref: ClientBucketResource
+                    - "/*"
+    S3OriginAccessIdentity:
+      Type: "AWS::CloudFront::CloudFrontOriginAccessIdentity"
+      Properties:
+        CloudFrontOriginAccessIdentityConfig:
+          Comment: Serverless managed web app S3 bucket origin-access-identity
+    ApiDistribution:
+      Type: AWS::CloudFront::Distribution
+      Properties:
+        DistributionConfig:
+          Aliases:
+            - ${self:custom.deployDomain}
+          ViewerCertificate:
+            SslSupportMethod: sni-only
+            AcmCertificateArn: ${self:custom.certificateARN}
+            MinimumProtocolVersion: TLSv1.2_2021
+          Origins:
+            - Id: WebApp
+              DomainName:
+                Fn::GetAtt: [ClientBucketResource, DomainName]
+              S3OriginConfig:
+                OriginAccessIdentity:
+                  Fn::Join:
+                    - ""
+                    - - origin-access-identity/cloudfront/
+                      - Ref: S3OriginAccessIdentity
+          Enabled: true
+          HttpVersion: http2
+          Comment: cdn for api gateway
+          PriceClass: PriceClass_All
+          DefaultRootObject: index.html
+          DefaultCacheBehavior:
+            AllowedMethods:
+              - GET
+              - HEAD
+              - OPTIONS
+            ## The origin id defined above
+            TargetOriginId: WebApp
+            ## Defining if and how the QueryString and Cookies are forwarded to the origin which in this case is S3
+            ForwardedValues:
+              QueryString: "false"
+              Cookies:
+                Forward: none
+            ## The protocol that users can use to access the files in the origin. To allow HTTP use `allow-all`
+            ViewerProtocolPolicy: redirect-to-https
+          Logging:
+            IncludeCookies: "false"
+            Bucket: ""
+            Prefix: ""
+    
     
 plugins:
   - serverless-finch

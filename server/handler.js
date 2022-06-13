@@ -180,9 +180,13 @@ app.post("/getByEmail", async function(req, res)
                             var jsonKey = allJSONKeys[j];
                             debuglog("JSONKey: "+ jsonKey);
                             var currentLinkedFile = data.Items[i].linked_files[jsonKey];
+                            
                             if(currentLinkedFile == "true")
                             {
                               var fileKey = data.Items[i].expid+"/"+jsonKey;
+                              if(fileKey.includes("audio"))
+                                var signedURL = s3.getSignedUrl('getObject', {Bucket: STORAGE_BUCKET,Key: fileKey,Expires: signedUrlExpireSeconds, ResponseContentType: "audio/wav", ResponseContentDisposition: 'attachment; filename ="' + fileKey + '.wav"'});
+                              else
                               var signedURL = s3.getSignedUrl('getObject', {Bucket: STORAGE_BUCKET,Key: fileKey,Expires: signedUrlExpireSeconds});
                               debuglog("Signed URL: " + signedURL);
                               data.Items[i].linked_files[jsonKey] = signedURL;
@@ -252,7 +256,10 @@ app.post("/getById", async function(req, res)
                             if(currentLinkedFile == "true")
                             {
                               var fileKey = data.Items[i].expid+"/"+jsonKey;
-                              var signedURL = s3.getSignedUrl('getObject', {Bucket: STORAGE_BUCKET,Key: fileKey,Expires: signedUrlExpireSeconds});
+                              if(fileKey.includes("audio"))
+                              var signedURL = s3.getSignedUrl('getObject', {Bucket: STORAGE_BUCKET,Key: fileKey,Expires: signedUrlExpireSeconds, ResponseContentType: "audio/wav", ResponseContentDisposition: 'attachment; filename ="' + fileKey + '.wav"'});
+                              else
+                                var signedURL = s3.getSignedUrl('getObject', {Bucket: STORAGE_BUCKET,Key: fileKey,Expires: signedUrlExpireSeconds});
                               debuglog("Signed URL: " + signedURL);
                               data.Items[i].linked_files[jsonKey] = signedURL;
                             }

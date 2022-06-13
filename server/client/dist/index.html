@@ -2,12 +2,11 @@
 <html lang="en" class="">
     <head>
         <meta charset="UTF-8" />
-
-        <meta name="google-signin-scope" content="profile email">
-        <meta name="google-signin-client_id" content="350655354040-jcb0ecc1rq659on0hkj4e3o95g5vt794.apps.googleusercontent.com">
-        <script src="https://apis.google.com/js/platform.js" async defer></script>
-        <script src="https://apis.google.com/js/platform.js?onload=onLoad" async defer></script>
-
+        <meta name="referrer" content="strict-origin-when-cross-origin">
+        
+        <script src="https://accounts.google.com/gsi/client" async defer></script>
+        <script src="https://cdn.jsdelivr.net/npm/jwt-decode@2.2.0/build/jwt-decode.min.js"></script>
+        
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
         <script src="//cdnjs.cloudflare.com/ajax/libs/react/17.0.2/umd/react.production.min.js"></script>
         <script src="//cdnjs.cloudflare.com/ajax/libs/react-dom/17.0.2/umd/react-dom.production.min.js"></script>
@@ -15,33 +14,37 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <link rel="stylesheet" href="assets/corestyle.css" />
         <script src="assets/server.js"></script>
-       <script>
-        let dummyEmail = "testhaptics@gmail.com"
+    <script>
+        let userEmail= "testhaptics@gmail.com";
+        let sessionJWTToken = NULL;
 
-        //Google OAuth - start
-        let userEmail =""
-
-        function onLoad() {
-        gapi.load('auth2', function() {
-            gapi.auth2.init();
+        window.onGoogleLibraryLoad = ()=>{
+            google.accounts.id.initialize({
+                client_id: '350655354040-jcb0ecc1rq659on0hkj4e3o95g5vt794.apps.googleusercontent.com',
+                cancel_on_tap_outside: false,
+                prompt_parent_id:"g_id_signin",
+                allowed_parent_origin: "*"
             });
+
+            google.accounts.id.prompt((notification)=>{
+                if(notification.isNotDisplayed()){
+                    console.log(notification.getNotDisplayedReason());
+                } else if (notification.isSkippedMoment()){
+                    console.log(notification.getSkippedReason());
+                } else if (notification.isDismissedMoment()){
+                    console.log(notification.getDismissedReason());
+                }else{
+
+                }
+            })
         }
         
-        function onSignIn(googleUser) {
-    	    let profile = googleUser.getBasicProfile();
-    	    let name=profile.getName();
-    	    userEmail=profile.getEmail();
+        function handleCredentialResponse(response) {
+            var decodedToken = jwt_decode(response.credential);
+            userEmail = decodedToken.email;
+            sessionJWTToken = response;
+            initialize(); // Run the initalize command only after successful login
         }
-
-
-        
-        function signOut() {
-            let auth2 = gapi.auth2.getAuthInstance();
-            auth2.signOut().then(function () {
-            console.log('User signed out.');
-        });
-        }
-        //Google OAuth - end
 
         function displayForm() {
             let finalResult;
@@ -57,10 +60,9 @@
         {
             //Initial Fetch Test
 
-            formData.email = dummyEmail
-            console.log(formData.email)
+            formData.email = userEmail;             
+            formData.jwtToken = sessionJWTToken;      //JWT token passed to validate the session if its a valid user, else fail
 
-            console.log(formData)
 
             fetch(lambdaServer+"/setExperiment",
                             {
@@ -79,6 +81,7 @@
 
 
             renderTable();
+            closeModal(); //Fix: closeModal
         }
 
         function openModal() {
@@ -93,16 +96,14 @@
             modal.style.display = "none";
         }
         
-        function renderTable(){       
+        function renderTable(){  
             fetch(lambdaServer+"/getByEmail",
                             {
                                 method: "POST",
-                               
-                                body: JSON.stringify({email: dummyEmail}),
+                                body: JSON.stringify({email: userEmail, jwtToken:sessionJWTToken}),       //JWT token passed to validate the session if its a valid user, else fail
                                 headers: {'Content-Type': 'application/json;charset=utf-8'},
                             }
             ).then(res => res.json()).then((data) => {
-                console.log(data)
                 var temp ="<table class='styled-table'><tr><th>ID</th><th>Description</th><th>Interaction Type</th><th>Max Score</th><th>Survey URL</th></tr>";
                 for( var i=0;i<data.length;i++){
                     temp += "<tr>";
@@ -146,12 +147,14 @@
         </script>
     </head>
 
-    <body onload="initialize();">
-        <div class="g-signin2" data-onsuccess="onSignIn" data-theme="dark"></div>
-        <br/>
-        <br/>
-        <a href="#" onclick="signOut()">Sign out</a>
+    <body>
         
+        <div id="g_id_onload"
+         data-client_id="350655354040-jcb0ecc1rq659on0hkj4e3o95g5vt794.apps.googleusercontent.com"
+         data-callback="handleCredentialResponse">
+        </div>
+        <div class="g_id_signin" data-type="standard" data-size="large" data-theme="outline" data-text="sign_in_with" data-shape="rectangular" data-logo_alignment="left"></div>
+
         <button class="button-24" style="float: right; margin: 40px;" onclick="openModal(); ">+</button>
         <div id="root" class="center" ></div>
         <div id="myModal" class="modal">
