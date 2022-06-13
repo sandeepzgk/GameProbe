@@ -112,6 +112,13 @@ resources:
       Type: AWS::CloudFront::Distribution
       Properties:
         DistributionConfig:
+          Aliases:
+            - "game-${sls:stage}.skoll.me"
+          CloudFrontDefaultCertificate: false      
+          ViewerCertificate:
+            SslSupportMethod: sni-only
+            AcmCertificateArn: "arn:aws:acm:us-east-1:660305772416:certificate/2a4b972c-e784-4049-9e46-754be12aaf9c"
+            MinimumProtocolVersion: TLSv1.2_2021
           Origins:
             - Id: WebApp
               DomainName:
