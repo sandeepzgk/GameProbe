@@ -185,7 +185,7 @@ app.post("/getByEmail", async function(req, res)
                             {
                               var fileKey = data.Items[i].expid+"/"+jsonKey;
                               if(fileKey.includes("audio"))
-                                var signedURL = s3.getSignedUrl('getObject', {Bucket: STORAGE_BUCKET,Key: fileKey,Expires: signedUrlExpireSeconds, ResponseContentDisposition: 'attachment; filename ="' + fileKey + '.wav"'});
+                                var signedURL = s3.getSignedUrl('getObject', {Bucket: STORAGE_BUCKET,Key: fileKey,Expires: signedUrlExpireSeconds, ResponseContentType: "audio/wav", ResponseContentDisposition: 'attachment; filename ="' + fileKey + '.wav"'});
                               else
                               var signedURL = s3.getSignedUrl('getObject', {Bucket: STORAGE_BUCKET,Key: fileKey,Expires: signedUrlExpireSeconds});
                               debuglog("Signed URL: " + signedURL);
@@ -257,7 +257,7 @@ app.post("/getById", async function(req, res)
                             {
                               var fileKey = data.Items[i].expid+"/"+jsonKey;
                               if(fileKey.includes("audio"))
-                                var signedURL = s3.getSignedUrl('getObject', {Bucket: STORAGE_BUCKET,Key: fileKey,Expires: signedUrlExpireSeconds, ResponseContentDisposition: 'attachment; filename ="' + fileKey + '.wav"'});
+                              var signedURL = s3.getSignedUrl('getObject', {Bucket: STORAGE_BUCKET,Key: fileKey,Expires: signedUrlExpireSeconds, ResponseContentType: "audio/wav", ResponseContentDisposition: 'attachment; filename ="' + fileKey + '.wav"'});
                               else
                                 var signedURL = s3.getSignedUrl('getObject', {Bucket: STORAGE_BUCKET,Key: fileKey,Expires: signedUrlExpireSeconds});
                               debuglog("Signed URL: " + signedURL);

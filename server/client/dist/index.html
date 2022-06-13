@@ -15,7 +15,8 @@
         <link rel="stylesheet" href="assets/corestyle.css" />
         <script src="assets/server.js"></script>
     <script>
-        let dummyEmail = "testhaptics@gmail.com"
+        let userEmail= "testhaptics@gmail.com";
+        let sessionJWTToken = NULL;
 
         window.onGoogleLibraryLoad = ()=>{
             google.accounts.id.initialize({
@@ -40,8 +41,9 @@
         
         function handleCredentialResponse(response) {
             var decodedToken = jwt_decode(response.credential);
-            console.log(decodedToken.name);
-            console.log(decodedToken.email);
+            userEmail = decodedToken.email;
+            sessionJWTToken = response;
+            initialize(); // Run the initalize command only after successful login
         }
 
         function displayForm() {
@@ -58,7 +60,8 @@
         {
             //Initial Fetch Test
 
-            formData.email = userEmail
+            formData.email = userEmail;             
+            formData.jwtToken = sessionJWTToken;      //JWT token passed to validate the session if its a valid user, else fail
 
 
             fetch(lambdaServer+"/setExperiment",
@@ -97,7 +100,7 @@
             fetch(lambdaServer+"/getByEmail",
                             {
                                 method: "POST",
-                                body: JSON.stringify({email: dummyEmail}),
+                                body: JSON.stringify({email: userEmail, jwtToken:sessionJWTToken}),       //JWT token passed to validate the session if its a valid user, else fail
                                 headers: {'Content-Type': 'application/json;charset=utf-8'},
                             }
             ).then(res => res.json()).then((data) => {
@@ -144,7 +147,7 @@
         </script>
     </head>
 
-    <body onload="initialize();">
+    <body>
         
         <div id="g_id_onload"
          data-client_id="350655354040-jcb0ecc1rq659on0hkj4e3o95g5vt794.apps.googleusercontent.com"
