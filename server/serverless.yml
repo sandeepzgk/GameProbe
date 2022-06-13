@@ -6,6 +6,7 @@ frameworkVersion: '3'
 custom:
   tableName: 'vtgame-data-table-${sls:stage}'
   bucketName: 'vtgame-file-bucket-${sls:stage}'
+  certificateARN: 'arn:aws:acm:us-east-1:660305772416:certificate/a860633a-6b53-492a-851b-35d8b762b3bb'
   dynamodb:
     start:
       migrate: false
@@ -117,7 +118,7 @@ resources:
           CloudFrontDefaultCertificate: false      
           ViewerCertificate:
             SslSupportMethod: sni-only
-            AcmCertificateArn: "arn:aws:acm:us-east-1:660305772416:certificate/2a4b972c-e784-4049-9e46-754be12aaf9c"
+            AcmCertificateArn: ${self:custom.certificateARN}
             MinimumProtocolVersion: TLSv1.2_2021
           Origins:
             - Id: WebApp
