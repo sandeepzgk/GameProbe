@@ -11,15 +11,15 @@ struct MenuView: View {
             VStack(alignment: .center, spacing: 16) {
 				HeaderBarTitle(title: "2048 HAPTICS GAME", size: 20)
 				
-                Text("Contributions:")
-				Text("Zoe Fisher")
-				Text("Harshitha Padiyar")
-				Text("Ryan Lam")
-				Text("Guangji Liu")
-				Text("Sarah Etter")
-				Text("LongHuy Nguyen")
-				
-				Text("Open source project: [Link](https://github.com/caiobzen/2048-swiftui)")
+//                Text("Contributions:")
+//				Text("Zoe Fisher")
+//				Text("Harshitha Padiyar")
+//				Text("Ryan Lam")
+//				Text("Guangji Liu")
+//				Text("Sarah Etter")
+//				Text("LongHuy Nguyen")
+//
+//				Text("Open source project: [Link](https://github.com/caiobzen/2048-swiftui)")
             }
             Spacer()
         }

@@ -14,7 +14,7 @@ struct InstructionPage: View {
     var viewModel:GameViewModel
     let user_instructions: String
     let url:URL
-    
+    @State private var buttonDisabled = true
     var body: some View {
         VStack(spacing: 0) {
             HeaderBarTitle(title: "GAME INSTRUCTION", size: 20)
@@ -34,7 +34,13 @@ struct InstructionPage: View {
             }
             .padding()
             .font(.system(size: 35, weight: .medium, design: .rounded))
-    
+            .disabled(self.buttonDisabled == true)
+            .onAppear {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                    self.buttonDisabled = false
+                    print("time out ok")
+                }
+            }
         }
     }
 }
