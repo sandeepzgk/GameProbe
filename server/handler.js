@@ -3,7 +3,7 @@ const schemaValidator = require("jsonschema").Validator;
 const express = require("express");
 const serverless = require("serverless-http");
 const cors = require("cors");
-const OAuth2Client = require('google-auth-library');
+const {OAuth2Client} = require('google-auth-library');
 
 const dynamoDbClient = new AWS.DynamoDB.DocumentClient();
 const google_client = new OAuth2Client(process.env.CLIENT_ID);
