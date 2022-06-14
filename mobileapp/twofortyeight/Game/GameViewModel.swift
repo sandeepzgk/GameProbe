@@ -41,6 +41,9 @@ class GameViewModel: ObservableObject {
                 if let hapticData = self.configuration?.hapticDataLong {
                     self.playHaptic(hapticData: hapticData)
                 }
+                if let longAudioUrl = self.configuration?.longAudioLocalUrl {
+                    self.play(url: longAudioUrl)
+                }
             }
         }
     }
@@ -149,7 +152,25 @@ class GameViewModel: ObservableObject {
         state = stateTracker.updateCurrent(with: result.newBoard)
         addedTile = result.addedTile
     }
+    
+    var audioPlayer: AVAudioPlayer?
+    func play(url: URL) {
+        print("playing \(url)")
 
+        do {
+
+            audioPlayer = try AVAudioPlayer(contentsOf: url)
+            audioPlayer?.prepareToPlay()
+            audioPlayer?.play()
+            print("play audio")
+
+        } catch let error {
+            audioPlayer = nil
+        }
+
+    }
+    
+    
     func push(_ direction: Direction) {
         if(!isGameOver){
             let result = engine.push(state.board, to: direction)
@@ -162,12 +183,11 @@ class GameViewModel: ObservableObject {
                         print("play haptic short effect")
                         playHaptic(hapticData: hapticData)
                     }
-                    if let shortAudio = self.configuration?.shortAudioPlayer {
-                        print("play short audio")
-                        shortAudio.seek(to: CMTime.zero)
-                        shortAudio.play();
-                    }
+
                     
+                  if let shortAudioUrl = self.configuration?.shortAudioLocalUrl { // play short audio
+                      self.play(url: shortAudioUrl)
+                  }
                 }
                 
                 addNumber()
@@ -269,6 +289,8 @@ struct ConfigBody: Codable {
 // MARK: - LinkedFiles
 struct LinkedFiles: Codable {
     let instructionImage, shortEffect, longEffect, longAudio, shortAudio: URL
+//    let instructionImage, shortEffect, longEffect: URL
+//    let longAudio, shortAudio: String
     //let instructionImage, shortEffect, longEffect: URL
     enum CodingKeys: String, CodingKey {
         case instructionImage = "instruction_image"
@@ -291,12 +313,6 @@ class Configuration {
     private let MAX_RETRY_NUM = 2;
     private let secondsToDelay=5.0;
     var startGameButtonActive=true;
-    
-    var shortAudioPlayer: AVPlayer?
-    var shortAudioPlayerItem:AVPlayerItem?
-    
-    var longAudioPlayer: AVPlayer?
-    var longAudioPlayerItem:AVPlayerItem?
     
     var downloaded = false {
         didSet {
@@ -327,6 +343,10 @@ class Configuration {
             }
         }
     }
+    
+    var shortAudioLocalUrl: URL?
+    var longAudioLocalUrl: URL?
+    
     
     init(config_id: String) {
         self.config_id = config_id
@@ -497,7 +517,8 @@ class Configuration {
         task.resume()
 
     }
-
+    
+    
     func downloadContent() {
         if let url = self.JSONconfig?.linkedFiles.shortEffect {
             let downloadTaskShort = URLSession.shared.downloadTask(with: url) {
@@ -537,21 +558,50 @@ class Configuration {
             print("invalid url for long hapitcs file")
         }
         
-        if let url = self.JSONconfig?.linkedFiles.shortAudio {
-            do{
-                //let url2 = URL(string: "https://s3.amazonaws.com/kargopolov/kukushka.mp3")
-                //let url3 = URL(string: "http://vtgame-web-bucket-dev.s3-website-us-east-1.amazonaws.com/short.wav")
-                let url3 = URL(string: "http://vtgame-web-bucket-dev.s3-website-us-east-1.amazonaws.com/noise.wav")
-                self.shortAudioPlayerItem = AVPlayerItem(url: url3!);
-                self.shortAudioPlayer = AVPlayer(playerItem: self.shortAudioPlayerItem);
-                self.shortAudioPlayer?.volume = 1.0;
-            } catch{
-                print(error);
-            }
-            
+        if let url = self.JSONconfig?.linkedFiles.shortAudio { // download the short audio .wav file with the right file extension
+            URLSession.shared.downloadTask(with: url) { location, response, error in
+                guard let location = location,
+                      let httpURLResponse = response as? HTTPURLResponse,
+                      httpURLResponse.statusCode == 200 else { return }
+                let fileName = httpURLResponse.suggestedFilename ?? httpURLResponse.url?.lastPathComponent ?? url.lastPathComponent
+                let destination = FileManager.default.temporaryDirectory.appendingPathComponent(fileName)
+                do {
+                    if FileManager.default.fileExists(atPath: destination.path) {
+                        try FileManager.default.removeItem(at: destination)
+                    }
+                    print("short audio location", location)  // location dyn.ah62d4rv4ge81k5pu
+                    try FileManager.default.moveItem(at: location, to: destination)
+                    print("short audio destination", destination)   // destination public.jpeg
+                    self.shortAudioLocalUrl=destination
+                } catch {
+                    print(error)
+                }
+            }.resume()
         } else {
             print("invalid url for short audio file")
         }
         
+        if let url = self.JSONconfig?.linkedFiles.longAudio {
+            URLSession.shared.downloadTask(with: url) { location, response, error in
+                guard let location = location,
+                      let httpURLResponse = response as? HTTPURLResponse,
+                      httpURLResponse.statusCode == 200 else { return }
+                let fileName = httpURLResponse.suggestedFilename ?? httpURLResponse.url?.lastPathComponent ?? url.lastPathComponent
+                let destination = FileManager.default.temporaryDirectory.appendingPathComponent(fileName)
+                do {
+                    if FileManager.default.fileExists(atPath: destination.path) {
+                        try FileManager.default.removeItem(at: destination)
+                    }
+                    print("long audio location", location)  // location dyn.ah62d4rv4ge81k5pu
+                    try FileManager.default.moveItem(at: location, to: destination)
+                    print("long audio destination", destination)   // destination public.jpeg
+                    self.longAudioLocalUrl=destination
+                } catch {
+                    print(error)
+                }
+            }.resume()
+        } else {
+            print("invalid url for long audio file")
+        }
     }
 }
