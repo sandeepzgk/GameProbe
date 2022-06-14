@@ -5,11 +5,11 @@
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.17.1",
+    "google-auth-library": "^8.0.2",
     "googleapis": "^100.0.0",
-    "jsonschema": "^1.4.0",
     "serverless": "^3.18.2",
+    "serverless-finch": "^4.0.0",
     "serverless-http": "^2.7.0",
-    "uuid": "^8.3.2",
-    "serverless-finch": "^4.0.0"
+    "uuid": "^8.3.2"
   }
 }

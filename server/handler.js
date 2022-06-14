@@ -1,8 +1,13 @@
 const AWS = require("aws-sdk");
-const Validator = require("jsonschema").Validator;
+const schemaValidator = require("jsonschema").Validator;
 const express = require("express");
 const serverless = require("serverless-http");
 const cors = require("cors");
+const OAuth2Client = require('google-auth-library');
+
+const dynamoDbClient = new AWS.DynamoDB.DocumentClient();
+const google_client = new OAuth2Client(process.env.CLIENT_ID);
+
 AWS.config.update(
 {
     region: process.env.REGION
@@ -15,7 +20,6 @@ const s3 = new AWS.S3();
 const debug = true;
 const signedUrlExpireSeconds = 60 * 5; //Link Expires in 5 minutes
 
-const dynamoDbClient = new AWS.DynamoDB.DocumentClient();
 
 function debuglog(str)
 {
@@ -30,10 +34,28 @@ app.use(express.json({ limit: '20MB' })); //To enable larger file upload upto 20
 app.use(cors());
 app.post("/setExperiment", async function(req, res)
 {
+    try
+    {
+        const ticket = await google_client.verifyIdToken(
+            {
+                idToken: req.body.jwtToken.credential,
+                audience: process.env.CLIENT_ID
+            })
+            .catch(function(err) 
+            {
+                debuglog("Failed to Validate");
+                debuglog(JSON.stringify(err));
+                res.status(401).json({error: "Unauthorized by Google"});
+            });
+    }
+    catch
+    {
+        res.status(401).json({error: "Unauthorized"});
+    }
     var instance = req.body;
     debuglog("Instance: ",instance);
     debuglog(JSON.stringify(instance));
-    var v = new Validator();
+    var v = new schemaValidator();
     var validation_result = v.validate(instance, db_schema);
     if (validation_result.valid)
     {
@@ -149,6 +171,25 @@ app.post("/setExperiment", async function(req, res)
 
 app.post("/getByEmail", async function(req, res)
 {
+    try
+    {
+        const ticket = await google_client.verifyIdToken(
+            {
+                idToken: req.body.jwtToken.credential,
+                audience: process.env.CLIENT_ID
+            })
+            .catch(function(err) 
+            {
+                debuglog("Failed to Validate");
+                debuglog(JSON.stringify(err));
+                res.status(401).json({error: "Unauthorized by Google"});
+            });
+    }
+    catch
+    {
+        res.status(401).json({error: "Unauthorized"});
+    }
+
    
     const getParams = {
         TableName: DATA_TABLE,
@@ -207,7 +248,6 @@ app.post("/getByEmail", async function(req, res)
     }
     catch (err)
     {
-        console.log(err)
         res.status(500).json(
         {
             error: "Could not retreive user",
