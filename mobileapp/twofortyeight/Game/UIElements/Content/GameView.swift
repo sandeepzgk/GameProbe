@@ -25,12 +25,16 @@ struct GameEntry: View {
             }
 			else if viewModel.isGameOver {
                 let surveyLink = (self.viewModel.configuration?.JSONconfig?.surveyURL ?? "https://usc.qualtrics.com/jfe/form/SV_dbfaGzKfZzEWETA") + (self.viewModel.hiddenVariables)
-                GameOverView(score: self.viewModel.state.score, moves: self.viewModel.numberOfMoves, surveyLink: surveyLink) {
-                    showLogin=true
-                    showConsent=false
-                    showInstruction=false
-					self.viewModel.reset()
-				}
+                if #available(iOS 14.0, *) {
+                    GameOverView(score: self.viewModel.state.score, moves: self.viewModel.numberOfMoves, surveyLink: surveyLink, skipGame: !self.viewModel.GameStart) {
+                        showLogin=true
+                        showConsent=false
+                        showInstruction=false
+                        self.viewModel.reset()
+                    }
+                } else {
+                    // Fallback on earlier versions
+                }
 			}
 			else {
 				GameView(viewModel: viewModel)
@@ -90,9 +94,13 @@ extension GameView {
 	
 	private func GameOver() -> some View {
 		EmptyView().sheet(isPresented: $viewModel.isGameOver) {
-            GameOverView(score: self.viewModel.state.score, moves: self.viewModel.numberOfMoves, surveyLink: self.viewModel.configuration!.JSONconfig!.surveyURL) {
-				self.viewModel.reset()
-			}
+            if #available(iOS 14.0, *) {
+                GameOverView(score: self.viewModel.state.score, moves: self.viewModel.numberOfMoves, surveyLink: self.viewModel.configuration!.JSONconfig!.surveyURL, skipGame: !self.viewModel.GameStart) {
+                    self.viewModel.reset()
+                }
+            } else {
+                // Fallback on earlier versions
+            }
 		}
 	}
 }

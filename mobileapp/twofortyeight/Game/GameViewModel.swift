@@ -37,12 +37,14 @@ class GameViewModel: ObservableObject {
         didSet {
             if isGameOver&&playLongEffect&&GameStart {
                 playLongEffect = false
-                print("play haptic long effect")
-                if let hapticData = self.configuration?.hapticDataLong {
-                    self.playHaptic(hapticData: hapticData)
-                }
-                if let longAudioUrl = self.configuration?.longAudioLocalUrl {
-                    self.play(url: longAudioUrl)
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    print("play haptic long effect")
+                    if let hapticData = self.configuration?.hapticDataLong {
+                        self.playHaptic(hapticData: hapticData)
+                    }
+                    if let longAudioUrl = self.configuration?.longAudioLocalUrl {
+                        self.play(url: longAudioUrl)
+                    }
                 }
             }
         }
@@ -101,6 +103,17 @@ class GameViewModel: ObservableObject {
             storage.save(score: state.score)
 			isGameOver = (state.score > MAX_SCORE || engine.isGameOver(state.board))
             storage.save(board: state.board)
+            
+            if isGameOver&&playLongEffect&&GameStart {
+                playLongEffect = false
+                print("play haptic long effect")
+                if let hapticData = self.configuration?.hapticDataLong {
+                    self.playHaptic(hapticData: hapticData)
+                }
+                if let longAudioUrl = self.configuration?.longAudioLocalUrl {
+                    self.play(url: longAudioUrl)
+                }
+            }
         }
     }
     
@@ -134,19 +147,7 @@ class GameViewModel: ObservableObject {
         }
     }
     
-    /**
-    DESCR: Check if the iOS meets minimum requirements to make sure it works.
-    INPUT: na
-    RET  : return true if it meets requirement, else return false. Important for the game engine to know that it does not qualify to use this particular device for the experiment so a error should be shown to the user.
-    DOC: https://developer.lofelt.com/integrating-haptics/studio-framework-for-ios/#integrating-haptics-using-the-studio-framework-for-ios  deviceMeetsMinimumRequirements
-    **/
-    func checkDevRequirements() -> Bool{
-        let meetDeviceRequire=try LofeltHaptics.deviceMeetsMinimumRequirement();
-        if(!meetDeviceRequire){
-            //@TODO: Kill the game when the device does not meet the device requirements
-        }
-        return meetDeviceRequire
-    }
+    
     func addNumber() {
         let result = engine.addNumber(state.board)
         state = stateTracker.updateCurrent(with: result.newBoard)
@@ -172,6 +173,7 @@ class GameViewModel: ObservableObject {
     
     
     func push(_ direction: Direction) {
+    
         if(!isGameOver){
             let result = engine.push(state.board, to: direction)
             let boardHasChanged = !state.board.isEqual(result.newBoard)
@@ -394,8 +396,31 @@ class Configuration {
 //        }
 //        task.resume()
 //    }
+    
+    /**
+    DESCR: Check if the iOS meets minimum requirements to make sure it works.
+    INPUT: na
+    RET  : return true if it meets requirement, else return false. Important for the game engine to know that it does not qualify to use this particular device for the experiment so a error should be shown to the user.
+    DOC: https://developer.lofelt.com/integrating-haptics/studio-framework-for-ios/#integrating-haptics-using-the-studio-framework-for-ios  deviceMeetsMinimumRequirements
+    **/
+    func checkDevRequirements() -> Bool{
+        let meetDeviceRequire=try LofeltHaptics.deviceMeetsMinimumRequirement();
+        if(!meetDeviceRequire){
+            //@TODO: Kill the game when the device does not meet the device requirements
+            self.startGameButtonActive = true
+            self.errorMsg="The device does not meet requirements to play haptics"
+            print("The device does not meet requirements to play haptic")
+        }
+        return meetDeviceRequire
+    }
+    
     typealias ConfigArray = [ConfigBody]
     func getConfig() {
+        
+        if(!checkDevRequirements()){
+            return
+        }
+        
         let url = URL(string: "https://t8fqmzvdd7.execute-api.us-east-1.amazonaws.com/getById")!
         var request = URLRequest(url: url)
         let bodyData = try? JSONSerialization.data(
@@ -407,7 +432,7 @@ class Configuration {
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.httpBody = bodyData
-        let semaphore: DispatchSemaphore = DispatchSemaphore(value: 0); //use the semaphore to make the task, request JSON from server a synchronize function call
+        //let semaphore: DispatchSemaphore = DispatchSemaphore(value: 0); //use the semaphore to make the task, request JSON from server a synchronize function call
         let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
             let httpResponse = response as? HTTPURLResponse
             print(httpResponse?.statusCode)
@@ -416,7 +441,7 @@ class Configuration {
                     print("reconnect retry request server")
                     //self.errorMsg = "re request server"
                     self.reconnect_num+=1;
-                    semaphore.signal();
+                    //semaphore.signal();
                     DispatchQueue.main.asyncAfter(deadline: .now() + self.secondsToDelay) {
                         print("This message is delayed")
                         self.getConfig();
@@ -424,13 +449,13 @@ class Configuration {
                 }
                 else {
                     self.errorMsg = "Server is Down"
-                    semaphore.signal();
+                    //semaphore.signal();
                 }
                 
             }
             else if (httpResponse?.statusCode == 404){
                 self.errorMsg = "Experiment id is wrong!"
-                semaphore.signal();
+                //semaphore.signal();
             }
             else if (httpResponse?.statusCode == 200){
                 
@@ -447,31 +472,32 @@ class Configuration {
                         print("success request server");
                         self.errorMsg = ""
                         //self.reconnect_num=0;
-                        semaphore.signal();
+                        //semaphore.signal();
+                        
                         self.downloadContent()
                     }
                     catch {
                         print(error)
-                        semaphore.signal()
+                        //semaphore.signal()
                         self.downloadCondition.signal()
                     }
                     
                 } else {
                     print("experiment id is wrong")
                     self.errorMsg = "experiment id is wrong";
-                    semaphore.signal();
+                    //semaphore.signal();
                     self.downloadCondition.signal()
                 }
             }
             else{
                 self.errorMsg = "Unkown error";
-                semaphore.signal();
+                //semaphore.signal();
             }
             
         }
             
         task.resume();
-        semaphore.wait()
+        //semaphore.wait()
         
     }
     
@@ -520,21 +546,33 @@ class Configuration {
     
     
     func downloadContent() {
+    
+        //self.startGameButtonActive=true;
         if let url = self.JSONconfig?.linkedFiles.shortEffect {
             let downloadTaskShort = URLSession.shared.downloadTask(with: url) {
                         urlOrNil, responseOrNil, errorOrNil in
-                        
+                
+                if errorOrNil != nil {
+                    print ("Error Downloading Short Haptic File")
+                    self.startGameButtonActive=true;
+                    self.errorMsg="Error Downloading Short Haptic File"
+                    return
+                }
                 guard let fileURL = urlOrNil else { return }
                 do {
                     try self.hapticDataShort = NSString(contentsOf: fileURL, encoding: String.Encoding.utf8.rawValue)
                     print("downloaded short haptic")
                     self.startGameButtonActive=false;
+                    
                 } catch {
                     print ("Error Downloading short Haptic from Aws: \(error)")
                     self.startGameButtonActive=true;
+                    self.errorMsg="Error Downloading Short Haptic File"
+                    
                 }
             }
             downloadTaskShort.resume()
+            
         } else {
             print("invalid url for short haptics file")
         }
@@ -542,7 +580,14 @@ class Configuration {
         if let url = self.JSONconfig?.linkedFiles.longEffect {
             let downloadTaskLong = URLSession.shared.downloadTask(with: url) {
                 urlOrNil, responseOrNil, errorOrNil in
-
+                
+                if errorOrNil != nil {
+                    print ("Error Downloading Long Haptic File")
+                    self.startGameButtonActive=true;
+                    self.errorMsg="Error Downloading Long Haptic File"
+                    return
+                }
+                
                 guard let fileURL = urlOrNil else { return }
                 do {
                     try self.hapticDataLong = NSString(contentsOf: fileURL, encoding: String.Encoding.utf8.rawValue)
@@ -551,6 +596,8 @@ class Configuration {
                 } catch {
                     print ("Error Downloading long Haptic from Aws: \(error)")
                     self.startGameButtonActive=true;
+                    self.errorMsg="Error Downloading Long Haptic File"
+
                 }
             }
             downloadTaskLong.resume()
@@ -560,6 +607,14 @@ class Configuration {
         
         if let url = self.JSONconfig?.linkedFiles.shortAudio { // download the short audio .wav file with the right file extension
             URLSession.shared.downloadTask(with: url) { location, response, error in
+                
+                if error != nil {
+                    self.startGameButtonActive=true
+                    print("fail to download short audio file")
+                    self.errorMsg="Error Downloading Short Audio File"
+                    return
+                }
+                
                 guard let location = location,
                       let httpURLResponse = response as? HTTPURLResponse,
                       httpURLResponse.statusCode == 200 else { return }
@@ -573,8 +628,12 @@ class Configuration {
                     try FileManager.default.moveItem(at: location, to: destination)
                     print("short audio destination", destination)   // destination public.jpeg
                     self.shortAudioLocalUrl=destination
+                    self.startGameButtonActive=false
                 } catch {
-                    print(error)
+                    self.startGameButtonActive=true
+                    print("fail to download short audio file")
+                    self.errorMsg="Error Downloading Short Audio File"
+
                 }
             }.resume()
         } else {
@@ -583,6 +642,14 @@ class Configuration {
         
         if let url = self.JSONconfig?.linkedFiles.longAudio {
             URLSession.shared.downloadTask(with: url) { location, response, error in
+                
+                if error != nil {
+                    self.startGameButtonActive=true
+                    print("fail to download long audio file")
+                    self.errorMsg="Error Downloading Long Audio File"
+                    return
+                }
+                
                 guard let location = location,
                       let httpURLResponse = response as? HTTPURLResponse,
                       httpURLResponse.statusCode == 200 else { return }
@@ -596,8 +663,12 @@ class Configuration {
                     try FileManager.default.moveItem(at: location, to: destination)
                     print("long audio destination", destination)   // destination public.jpeg
                     self.longAudioLocalUrl=destination
+                    self.startGameButtonActive=false
                 } catch {
-                    print(error)
+                    self.startGameButtonActive=true
+                    print("fail to download long audio file")
+                    self.errorMsg="Error Downloading Long Audio File"
+
                 }
             }.resume()
         } else {

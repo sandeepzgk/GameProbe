@@ -20,6 +20,7 @@ struct MenuView: View {
 //				Text("LongHuy Nguyen")
 //
 //				Text("Open source project: [Link](https://github.com/caiobzen/2048-swiftui)")
+                Text("2048 is a game where you combine numbered tiles in order to gain a higher numbered tile. In this game you start with two tiles, the lowest possible number available is two. Then you will play by combining the tiles with the same number to have a tile with the sum of the number on the two tiles. ")
             }
             Spacer()
         }
