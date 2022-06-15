@@ -1,15 +1,12 @@
 const lambdaServer = {
     serverURLs: {
         dev: "https://t8fqmzvdd7.execute-api.us-east-1.amazonaws.com",
-        richard: "https://2yadgqcewd.execute-api.us-east-1.amazonaws.com",
         prod: "https://3s636biw5i.execute-api.us-east-1.amazonaws.com"
     },
     get server() 
     {
         if (window.location.hostname.indexOf("dev") > 0)
             return this.serverURLs["dev"]
-        else if (window.location.hostname.indexOf("richard") > 0)
-            return this.serverURLs["richard"]
         else if (window.location.hostname.indexOf("prod") > 0)
             return this.serverURLs["prod"]
         else
