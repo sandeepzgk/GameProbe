@@ -44,12 +44,7 @@ This is a document that explains how to run the ```server``` on AWS via Express 
     ```
     
 5. To export the server environment so that the the webclient "knows" where to call 
-
-    _Important Note_: To update the ```******``` **_--stage variable_** to the right environment that is being used
-    ```bash
-    serverval=$(serverless info --verbose --stage ****** | grep "endpoint" | grep -P 'http.*' --only-matching) && echo "let lambdaServer=\""$serverval"\"" > client/dist/assets/server.js
-    ```
-    - This is the file that the webclient loads to find the server URL. This file is ignored from commit, its only used prior to deploying the client. So run this before the next step. Please update the path for ```client/dist/assets/server.js``` as appropriately needed from where you are running this code. 
+    - This is the file that the webclient loads to find the server URL. This file has a getter function that looks at the static website domain, and pick the right URL for the backend lambda server. Please update the path for ```client/dist/assets/server.js``` as appropriately needed when introducing new environments.
 
 
 6. To deploy to AWS (Static Files aka Static Web Pages or website)
