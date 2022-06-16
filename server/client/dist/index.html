@@ -101,6 +101,8 @@
         }
         
         function renderTable(){  
+            console.log("serverurl")
+            console.log(lambdaServer.server+"/getByEmail")
             fetch(lambdaServer.server+"/getByEmail",
                             {
                                 method: "POST",
