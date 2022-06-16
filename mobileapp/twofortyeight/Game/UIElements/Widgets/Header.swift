@@ -15,7 +15,7 @@ struct Header: View {
             HStack(alignment: .top) {
                 VStack(alignment: .center, spacing: 10) {
                     ScoreBox(title: scoreLabel, score:score)
-                    SmallActionButton(title: "TUTORIAL", action: self.menuAction, enabled: true)
+                    SmallActionButton(title: "HELP", action: self.menuAction, enabled: true)
                         .accessibility(identifier: "menuButton")
                 }
                 VStack(alignment: .center, spacing: 10) {
