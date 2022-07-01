@@ -20,7 +20,8 @@ struct GameEntry: View {
 			}
             else if showInstruction {
                 let instructions = viewModel.configuration?.JSONconfig?.userInstructions ?? "No custom instructions:)"
-                let url = viewModel.configuration?.JSONconfig?.linkedFiles.instructionImage ?? URL(string: "https://www.logolynx.com/images/logolynx/7d/7d09a7f18456e08cbf106b89e750bd2d.jpeg")!
+//                let url = viewModel.configuration?.JSONconfig?.linkedFiles.instructionImage ?? URL(string: //"https://www.logolynx.com/images/logolynx/7d/7d09a7f18456e08cbf106b89e750bd2d.jpeg")!
+                let url=(self.viewModel.configuration?.instructionImageLocalUrl)!
                 InstructionPage(showInstruction: $showInstruction,viewModel: self.viewModel ,user_instructions:instructions, url: url)
             }
 			else if viewModel.isGameOver {

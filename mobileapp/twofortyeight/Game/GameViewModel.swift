@@ -57,6 +57,7 @@ class GameViewModel: ObservableObject {
             self.configuration = Configuration(config_id: self.config_id!)
             if let max_score=self.configuration?.JSONconfig?.experimentMaxscore {
                 self.MAX_SCORE = max_score
+                print("set max score ",max_score);
             }
             if !configHiddenVariablesDone {
                 self.hiddenVariables += "&config_id=" + (config_id ?? "")
@@ -124,6 +125,7 @@ class GameViewModel: ObservableObject {
     func setupAHAPHapticEngine() {
         do{
             self.hapticEngine = try CHHapticEngine()
+            
         } catch let error{
             print("AHAP Haptics Engine Creation Error: \(error)")
         }
@@ -298,7 +300,7 @@ class Configuration {
     var longHapticAHAPurl:URL?
     var shortAudioLocalUrl: URL?
     var longAudioLocalUrl: URL?
-    
+    var instructionImageLocalUrl: URL?
     
     init(config_id: String) {
         self.config_id = config_id
@@ -311,10 +313,14 @@ class Configuration {
     }
     
     typealias ConfigArray = [ConfigBody]
-    func getConfig() {
-        print("getConfig call @@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-        //let url = URL(string: "https://t8fqmzvdd7.execute-api.us-east-1.amazonaws.com/getById")! // dev env
-        let url = URL(string: "https://3s636biw5i.execute-api.us-east-1.amazonaws.com/getById")! // prod env
+    func getConfig(develop_env:Bool) {
+        print("develop env: ",develop_env);
+        var url = URL(string: "https://3s636biw5i.execute-api.us-east-1.amazonaws.com/getById")! // prod env
+        if(develop_env){
+            url = URL(string: "https://t8fqmzvdd7.execute-api.us-east-1.amazonaws.com/getById")! // dev env
+            
+        }
+        print(url);
         var request = URLRequest(url: url)
         let bodyData = try? JSONSerialization.data(
             withJSONObject: [
@@ -322,6 +328,7 @@ class Configuration {
             ],
             options: []
         )
+        
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.httpBody = bodyData
@@ -335,7 +342,7 @@ class Configuration {
                     self.reconnect_num+=1;
                     DispatchQueue.main.asyncAfter(deadline: .now() + self.secondsToDelay) {
                         print("This message is delayed")
-                        self.getConfig();
+                        self.getConfig(develop_env: develop_env);
                     }
                 }
                 else {
@@ -574,6 +581,44 @@ class Configuration {
             }.resume()
         } else {
             print("invalid url for long audio file")
+        }
+        
+        if let url = self.JSONconfig?.linkedFiles.instructionImage {
+            let downloadTaskLong = URLSession.shared.downloadTask(with: url) {
+                urlOrNil, responseOrNil, errorOrNil in
+                
+                if errorOrNil != nil {
+                    print ("Error Downloading instruction image")
+                    self.startGameButtonActive=true;
+                    self.errorMsg="Error Downloading instruction image"
+                    return
+                }
+                
+                guard let location = urlOrNil else { return }
+                let fileName = "instruction_image.png"
+                
+                let destination = FileManager.default.temporaryDirectory.appendingPathComponent(fileName)
+                do {
+                    if FileManager.default.fileExists(atPath: destination.path) {
+                        try FileManager.default.removeItem(at: destination)
+                    }
+                    print("downloaded instruction image")
+                    print("instruction image location", location)  // location dyn.ah62d4rv4ge81k5pu
+                    try FileManager.default.moveItem(at: location, to: destination)
+                    print("instruction image destination", destination)   // destination public.jpeg
+                    self.instructionImageLocalUrl = destination
+                    //self.startGameButtonActive=false;
+                    
+                } catch {
+                    print ("Error Downloading instruction image from Aws: \(error)")
+                    self.startGameButtonActive=true;
+                    self.errorMsg="Error Downloading instruction image"
+                    
+                }
+            }
+            downloadTaskLong.resume()
+        } else {
+            print("invalid url for instruction image")
         }
     }
 }

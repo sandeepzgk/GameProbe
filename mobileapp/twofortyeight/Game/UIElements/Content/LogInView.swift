@@ -8,7 +8,8 @@ struct LogInView: View {
     @Binding var errorString:String
     @State private var userId: String = ""
 	@State private var experimentId: String = ""
-	
+    @State private var develop_env = false
+    
     init(viewModel: GameViewModel, showLogin: Binding<Bool>, showConsent: Binding<Bool>, stopGame: Binding<Bool>, errorString: Binding<String>){
         _showLogin=showLogin
         _showConsent=showConsent
@@ -50,14 +51,22 @@ struct LogInView: View {
 				self.viewModel.experimentId = self.experimentId
 				self.viewModel.userId = self.userId
 				self.viewModel.config_id = self.experimentId
-				self.viewModel.configuration?.getConfig()
+                self.viewModel.configuration?.getConfig(develop_env: develop_env)
 				self.viewModel.reset()
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) { // asynchronize wait for file downloading to finish
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) { // asynchronize wait for file downloading to finish
+                    
                     if let startButtonActive = self.viewModel.configuration?.startGameButtonActive {
+
+                        
                         if(startButtonActive){
                             self.showLogin = true
                         }
                         else{
+                            let max_score=self.viewModel.configuration?.JSONconfig?.experimentMaxscore;
+                            print("max score: ",max_score);
+                            self.viewModel.MAX_SCORE=max_score!;
+                            print("develop_env: ",develop_env);
                             self.showConsent = true
                             self.showLogin = false
                         }
@@ -82,10 +91,13 @@ struct LogInView: View {
 				self.viewModel.reset()
 				self.viewModel.skipGame = true
 				self.showLogin = false
+                self.viewModel.MAX_SCORE=64;
 			}) {
 				Text("Skip >>")
 			}
-			
+            Toggle(isOn: $develop_env) {
+                    Text("Develop Environment")
+            }.padding()
             Text(self.errorString).foregroundColor(Color.red)
 		}
 	}

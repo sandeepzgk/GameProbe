@@ -19,11 +19,15 @@ struct InstructionPage: View {
         VStack(spacing: 0) {
             HeaderBarTitle(title: "GAME INSTRUCTION", size: 20)
         
-            URLImage(url) { image in
-                image
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-            }
+//            URLImage(url) { image in
+//                image
+//                    .resizable()
+//                    .aspectRatio(contentMode: .fit)
+//            }
+            
+            
+            Image(uiImage: UIImage(contentsOfFile: url.path)!).resizable().aspectRatio(contentMode: .fit)
+            
             Text(user_instructions).font(.system(size: 25)).bold()
             
             Button(action: {

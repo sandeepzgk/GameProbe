@@ -56,7 +56,7 @@
             const urls = ["assets/formschema.json", "assets/formuischema.json"];
             Promise.all(urls.map(url => fetch(url).then(e => e.json()))).then(data => {
                 finalResult = data.flat();
-                ReactDOM.render(React.createElement(Form, {schema: finalResult[0],uiSchema: finalResult[1],onSubmit: e => setFormData(e.formData)}), document.getElementById("app"));
+                ReactDOM.render(React.createElement(Form, {key:Date.now(),schema: finalResult[0],uiSchema: finalResult[1],onSubmit: e => setFormData(e.formData)}), document.getElementById("app"));
             });
         }
 
@@ -167,7 +167,7 @@
   
         
 
-        <button id="add_button" class="button-24" style="float: right; margin: 10px; margin-top: -10px; display: none;" onclick="openModal(); ">+</button>
+        <button id="add_button" class="button-24" style="float: right; margin: 10px; margin-top: -10px; " onclick="openModal(); ">+</button>
         <div id="root" class="center" ></div>
         <div id="myModal" class="modal">
             <div class="modal-content">
