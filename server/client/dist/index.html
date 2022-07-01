@@ -50,13 +50,60 @@
             initialize(); // Run the initalize command only after successful login
         }
 
+        function validate(formData, errors) {
+            console.log(formData)
+            console.log(errors)
+            let hapticFileExtension=[".ahap"];
+            let audiofileExtension=[".wav"];
+            let imagefileExtension=[".png",".jpg",".jpeg"]
+
+            let instruction_image=formData.linked_files.instruction_image;
+            let long_audio=formData.linked_files.long_audio;
+            let long_effect=formData.linked_files.long_effect;
+            let short_audio=formData.linked_files.short_audio;
+            let short_effect=formData.linked_files.short_effect;
+
+            if(!checkFileExtension(instruction_image,imagefileExtension)){
+                errors.linked_files.instruction_image.addError("Instruction Image file extension is not right. It should be .png, .jpg or .jpeg.");
+            }
+
+            if(!checkFileExtension(long_audio,audiofileExtension)){
+                errors.linked_files.long_audio.addError("Long audio file extension is not right. It should be .wav.");
+            }
+
+            if(!checkFileExtension(short_audio,audiofileExtension)){
+                errors.linked_files.short_audio.addError("Short audio file extension is not right. It should be .wav.");
+            }
+
+            if(!checkFileExtension(long_effect,hapticFileExtension)){
+                errors.linked_files.long_effect.addError("Long effect file extension is not right. It should be .ahap.");
+            }
+
+            if(!checkFileExtension(short_effect,hapticFileExtension)){
+                errors.linked_files.short_effect.addError("Short effect file extension is not right. It should be .ahap.");
+            }
+            
+            
+        return errors;
+        }
+
+        function checkFileExtension(fileStr,extension){
+            for(const ext of extension){
+                if(fileStr.indexOf(ext)>=0){
+                    return true;
+                }
+            }
+            return false;
+        }
+
         function displayForm() {
             let finalResult;
             const Form = JSONSchemaForm.default;
             const urls = ["assets/formschema.json", "assets/formuischema.json"];
             Promise.all(urls.map(url => fetch(url).then(e => e.json()))).then(data => {
                 finalResult = data.flat();
-                ReactDOM.render(React.createElement(Form, {key:Date.now(),schema: finalResult[0],uiSchema: finalResult[1],onSubmit: e => setFormData(e.formData)}), document.getElementById("app"));
+                ReactDOM.render(React.createElement(Form, {validate:validate,key:Date.now(),schema: finalResult[0],uiSchema: finalResult[1],onSubmit: e => setFormData(e.formData)}), document.getElementById("app"));
+                // assign the unique "key" of "Date.now()" in order to create a new Form component
             });
         }
 
@@ -167,7 +214,7 @@
   
         
 
-        <button id="add_button" class="button-24" style="float: right; margin: 10px; margin-top: -10px; " onclick="openModal(); ">+</button>
+        <button id="add_button" class="button-24" style="float: right; margin: 10px; margin-top: -10px; display:none ;" onclick="openModal(); ">+</button>
         <div id="root" class="center" ></div>
         <div id="myModal" class="modal">
             <div class="modal-content">
