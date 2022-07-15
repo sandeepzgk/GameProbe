@@ -27,7 +27,9 @@ struct GameEntry: View {
             
            
 			else if viewModel.isGameOver {
-                let surveyLink = (self.viewModel.configuration?.JSONconfig?.surveyURL ?? "https://usc.qualtrics.com/jfe/form/SV_dbfaGzKfZzEWETA") + (self.viewModel.hiddenVariables) + String("&move_count=") + String(self.viewModel.numberOfMoves) + String("&finish_score=") + String(self.viewModel.engine.state.score) +  String("&actual_exp_id=") + String(self.viewModel.config_id) + + String("&actual_part_id=") + String(self.viewModel.userId)
+                let surveyScoreParams = String("?move_count=") + String(self.viewModel.numberOfMoves) + String("&finish_score=") + String(self.viewModel.state.score)
+                let surveyExpPartIDParams = String("&actual_exp_id=") + String(self.viewModel.config_id!) +  String("&actual_part_id=") + String(self.viewModel.userId)
+                let surveyLink = ((self.viewModel.configuration?.JSONconfig!.surveyURL)!) + String(surveyScoreParams)  + String(surveyExpPartIDParams)
                 if #available(iOS 14.0, *) {
                     GameOverView(score: self.viewModel.state.score, moves: self.viewModel.numberOfMoves, surveyLink: surveyLink, skipGame: !self.viewModel.GameStart) {
                         showLogin=true
