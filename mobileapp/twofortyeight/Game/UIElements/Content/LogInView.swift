@@ -96,7 +96,7 @@ struct LogInView: View {
 				Text("Skip >>")
 			}
             Toggle(isOn: $develop_env) {
-                    Text("Develop Environment")
+                    Text("Dev Env")
             }.padding()
             Text(self.errorString).foregroundColor(Color.red)
 		}

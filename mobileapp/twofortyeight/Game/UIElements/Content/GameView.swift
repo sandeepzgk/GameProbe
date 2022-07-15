@@ -24,8 +24,10 @@ struct GameEntry: View {
                 let url=(self.viewModel.configuration?.instructionImageLocalUrl)!
                 InstructionPage(showInstruction: $showInstruction,viewModel: self.viewModel ,user_instructions:instructions, url: url)
             }
+            
+           
 			else if viewModel.isGameOver {
-                let surveyLink = (self.viewModel.configuration?.JSONconfig?.surveyURL ?? "https://usc.qualtrics.com/jfe/form/SV_dbfaGzKfZzEWETA") + (self.viewModel.hiddenVariables)
+                let surveyLink = (self.viewModel.configuration?.JSONconfig?.surveyURL ?? "https://usc.qualtrics.com/jfe/form/SV_dbfaGzKfZzEWETA") + (self.viewModel.hiddenVariables) + String("&move_count=") + String(self.viewModel.numberOfMoves) + String("&finish_score=") + String(self.viewModel.engine.state.score) +  String("&actual_exp_id=") + String(self.viewModel.config_id) + + String("&actual_part_id=") + String(self.viewModel.userId)
                 if #available(iOS 14.0, *) {
                     GameOverView(score: self.viewModel.state.score, moves: self.viewModel.numberOfMoves, surveyLink: surveyLink, skipGame: !self.viewModel.GameStart) {
                         showLogin=true

@@ -45,6 +45,8 @@ class GameViewModel: ObservableObject {
                     }
                     if let longAudioUrl = self.configuration?.longAudioLocalUrl {
                         self.play(url: longAudioUrl)
+                        
+                        
                     }
                 }
             }
