@@ -64,23 +64,23 @@
             let short_effect=formData.linked_files.short_effect;
 
             if(!checkFileExtension(instruction_image,imagefileExtension)){
-                errors.linked_files.instruction_image.addError("Instruction Image file extension is not right. It should be .png, .jpg or .jpeg.");
+                errors.linked_files.instruction_image.addError("Instruction Image file should be .png, .jpg or .jpeg.");
             }
 
             if(!checkFileExtension(long_audio,audiofileExtension)){
-                errors.linked_files.long_audio.addError("Long audio file extension is not right. It should be .wav.");
+                errors.linked_files.long_audio.addError("Long audio file extension should be .wav.");
             }
 
             if(!checkFileExtension(short_audio,audiofileExtension)){
-                errors.linked_files.short_audio.addError("Short audio file extension is not right. It should be .wav.");
+                errors.linked_files.short_audio.addError("Short audio file extension  should be .wav.");
             }
 
             if(!checkFileExtension(long_effect,hapticFileExtension)){
-                errors.linked_files.long_effect.addError("Long effect file extension is not right. It should be .ahap.");
+                errors.linked_files.long_effect.addError("Long effect file extension should be .ahap.");
             }
 
             if(!checkFileExtension(short_effect,hapticFileExtension)){
-                errors.linked_files.short_effect.addError("Short effect file extension is not right. It should be .ahap.");
+                errors.linked_files.short_effect.addError("Short effect file extension should be .ahap.");
             }
             
             
