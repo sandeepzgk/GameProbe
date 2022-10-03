@@ -739,7 +739,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "twofortyeight/Preview\\ Content";
-				DEVELOPMENT_TEAM = B6YP9U3YR5;
+				DEVELOPMENT_TEAM = WMZ566PMDQ;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = twofortyeight/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -761,7 +761,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "twofortyeight/Preview\\ Content";
-				DEVELOPMENT_TEAM = B6YP9U3YR5;
+				DEVELOPMENT_TEAM = WMZ566PMDQ;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = twofortyeight/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -783,7 +783,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 74SMNA83A6;
+				DEVELOPMENT_TEAM = WMZ566PMDQ;
 				INFOPLIST_FILE = twofortyeightTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -806,7 +806,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 74SMNA83A6;
+				DEVELOPMENT_TEAM = WMZ566PMDQ;
 				INFOPLIST_FILE = twofortyeightTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -826,7 +826,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = B6YP9U3YR5;
+				DEVELOPMENT_TEAM = WMZ566PMDQ;
 				INFOPLIST_FILE = twofortyeightUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -846,14 +846,14 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = B6YP9U3YR5;
+				DEVELOPMENT_TEAM = WMZ566PMDQ;
 				INFOPLIST_FILE = twofortyeightUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.ccorrea.twofortyeightUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ccorrea.twofortyeightUITests.xctrunner;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
