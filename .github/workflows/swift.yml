@@ -13,12 +13,13 @@ jobs:
   build-and-test:
 
     runs-on: macos-latest
+    
+    defaults:
+       run:
+         working-directory: ./mobileapp/twofortyeight.xcodeproj
 
     steps:
     - uses: actions/checkout@v3
-    
-    -name: Locate
-      run: cd mobileapp/twofortyeight.xcodeproj
     
     - name: Build
       run: swift build -v
