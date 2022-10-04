@@ -16,7 +16,7 @@ jobs:
     
     defaults:
        run:
-         working-directory: ./home/runner/work/iOSHapticTestPlatform/mobileapp/twofortyeight.xcodeproj
+         working-directory: mobileapp/twofortyeight.xcodeproj
 
     steps:
     - uses: actions/checkout@v3

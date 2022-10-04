@@ -17,7 +17,7 @@ jobs:
     
     defaults:
        run:
-         working-directory: ./home/runner/work/iOSHapticTestPlatform/mobileapp/twofortyeight.xcodeproj
+         working-directory: server
 
     strategy:
       matrix:
