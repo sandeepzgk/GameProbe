@@ -1,3 +1,5 @@
+# Note: If getting errors, delete twofortyeight.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
+
 name: iOS starter workflow
 
 on:
