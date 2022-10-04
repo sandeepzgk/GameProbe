@@ -17,6 +17,9 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     
+    -name: Locate
+      run: cd mobileapp/twofortyeight.xcodeproj
+    
     - name: Build
       run: swift build -v
       
