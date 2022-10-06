@@ -21,27 +21,27 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         
-      - name: iOS test [iPhone 8]
+      - name: iOS Test iPhone 8
         run: >-
           xcodebuild test -workspace twofortyeight.xcodeproj/project.xcworkspace
           -scheme twofortyeight -destination 'platform=iOS Simulator,name=iPhone 8,OS=15.2'
         
-        - name: iOS test [iPhone 11]
+        - name: iOS Test iPhone 11
         run: >-
           xcodebuild test -workspace twofortyeight.xcodeproj/project.xcworkspace
           -scheme twofortyeight -destination 'platform=iOS Simulator,name=iPhone 11,OS=15.2'
           
-        - name: iOS test [iPhone 13]
+        - name: iOS Test iPhone 13
         run: >-
           xcodebuild test -workspace twofortyeight.xcodeproj/project.xcworkspace
           -scheme twofortyeight -destination 'platform=iOS Simulator,name=iPhone 13,OS=15.2'
           
-        - name: iOS test [iPad 8th generation]
+        - name: iOS Test iPad 8th generation
         run: >-
           xcodebuild test -workspace twofortyeight.xcodeproj/project.xcworkspace
           -scheme twofortyeight -destination 'platform=iOS Simulator,name=name:iPad (8th generation),OS=15.2'
           
-        - name: iOS test [iPad mini]
+        - name: iOS Test iPad mini
         run: >-
           xcodebuild test -workspace twofortyeight.xcodeproj/project.xcworkspace
           -scheme twofortyeight -destination 'platform=iOS Simulator,name=name:iPad mini (6th generation),OS=15.2'
