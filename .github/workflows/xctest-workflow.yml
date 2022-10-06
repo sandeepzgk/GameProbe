@@ -24,7 +24,13 @@ jobs:
       - name: iOS build setup
         run: >-
           xcodebuild test -workspace twofortyeight.xcodeproj/project.xcworkspace
-          -scheme twofortyeight -destination 'platform=iOS Simulator, id=798B72EF-473B-4954-BFE2-91B40163F633, OS=15.2, name=iPhone 8'
+          -scheme twofortyeight -destination 'platform=iOS Simulator,name=iPhone 8,OS=15.2'
+          
+#        - name: iOS build setup
+#        run: >-
+#          xcodebuild test -workspace twofortyeight.xcodeproj/project.xcworkspace
+#          -scheme twofortyeight -destination 'platform=iOS Simulator, id=798B72EF-473B-4954-BFE2-91B40163F633, OS:15.2, name=iPhone 8'
+          
       
 #      - name: iOS build setup
 #        run: >-
