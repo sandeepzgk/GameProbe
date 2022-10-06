@@ -25,7 +25,14 @@ jobs:
         run: >-
           xcodebuild test -workspace twofortyeight.xcodeproj/project.xcworkspace
           -scheme twofortyeight -destination 'platform=iOS Simulator,name=iPhone 8,OS=15.2'
-          
+      - name: iOS Test ... iPhone 11
+        run: >-
+          xcodebuild test -workspace twofortyeight.xcodeproj/project.xcworkspace
+          -scheme twofortyeight -destination 'platform=iOS Simulator,name=iPhone 11,OS=15.2'
+      - name: iOS Test ... iPhone 13
+        run: >-
+          xcodebuild test -workspace twofortyeight.xcodeproj/project.xcworkspace
+          -scheme twofortyeight -destination 'platform=iOS Simulator,name=iPhone 13,OS=15.2'
           
 #        - name: iOS build setup
 #        run: >-
