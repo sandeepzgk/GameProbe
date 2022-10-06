@@ -1,0 +1,57 @@
+# Note: If getting errors, delete twofortyeight.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
+
+name: Xcode_Swift_CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    name: Build and Test default scheme using iPhone/iPad simulator
+    runs-on: macos-latest
+    
+    defaults:
+       run:
+         working-directory: ./mobileapp/
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        
+      - name: iOS Test ... iPhone 8
+        run: >-
+          xcodebuild test -workspace twofortyeight.xcodeproj/project.xcworkspace
+          -scheme twofortyeight -destination 'platform=iOS Simulator,name=iPhone 8,OS=15.2'
+          -resultBundlePath iPhone8Result
+#      - name: iOS Test ... iPhone 11
+#        run: >-
+#          xcodebuild test -workspace twofortyeight.xcodeproj/project.xcworkspace
+#          -scheme twofortyeight -destination 'platform=iOS Simulator,name=iPhone 11,OS=15.2'
+#          -resultBundlePath iPhone11Result
+#      - name: iOS Test ... iPhone 13
+#        run: >-
+#          xcodebuild test -workspace twofortyeight.xcodeproj/project.xcworkspace
+#          -scheme twofortyeight -destination 'platform=iOS Simulator,name=iPhone 13,OS=15.2'
+#          -resultBundlePath iPhone13Result
+#      - name: iOS Test ... iPad 8th generation
+#        run: >-
+#          xcodebuild test -workspace twofortyeight.xcodeproj/project.xcworkspace
+#          -scheme twofortyeight -destination 'platform=iOS Simulator,name=name:iPad (8th generation),OS=15.2'
+#          -resultBundlePath iPad8Result
+#      - name: iOS Test ... iPad mini
+#        run: >-
+#          xcodebuild test -workspace twofortyeight.xcodeproj/project.xcworkspace
+#          -scheme twofortyeight -destination 'platform=iOS Simulator,name=name:iPad mini (6th generation),OS=15.2'
+#          -resultBundlePath iPadMiniResult
+      - uses: kishikawakatsumi/xcresulttool@v1
+        with:
+          path: |
+            iPhone8Result.xcresult
+#            results/iPhone11Result.xcresult
+#            results/iPhone13Result.xcresult
+#            results/iPad8Result.xcresult
+#            results/iPadMiniResult.xcresult
+        if: success() || failure()
