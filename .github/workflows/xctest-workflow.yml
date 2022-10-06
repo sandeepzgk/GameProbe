@@ -25,19 +25,33 @@ jobs:
         run: >-
           xcodebuild test -workspace twofortyeight.xcodeproj/project.xcworkspace
           -scheme twofortyeight -destination 'platform=iOS Simulator,name=iPhone 8,OS=15.2'
+          -resultBundlePath results/iPhone8Result
       - name: iOS Test ... iPhone 11
         run: >-
           xcodebuild test -workspace twofortyeight.xcodeproj/project.xcworkspace
           -scheme twofortyeight -destination 'platform=iOS Simulator,name=iPhone 11,OS=15.2'
+          -resultBundlePath results/iPhone11Result
       - name: iOS Test ... iPhone 13
         run: >-
           xcodebuild test -workspace twofortyeight.xcodeproj/project.xcworkspace
           -scheme twofortyeight -destination 'platform=iOS Simulator,name=iPhone 13,OS=15.2'
+          -resultBundlePath results/iPhone13Result
       - name: iOS Test ... iPad 8th generation
         run: >-
           xcodebuild test -workspace twofortyeight.xcodeproj/project.xcworkspace
           -scheme twofortyeight -destination 'platform=iOS Simulator,name=name:iPad (8th generation),OS=15.2'
+          -resultBundlePath results/iPad8Result
       - name: iOS Test ... iPad mini
         run: >-
           xcodebuild test -workspace twofortyeight.xcodeproj/project.xcworkspace
           -scheme twofortyeight -destination 'platform=iOS Simulator,name=name:iPad mini (6th generation),OS=15.2'
+          -resultBundlePath results/iPadMiniResult
+      - uses: kishikawakatsumi/xcresulttool@v1
+        with:
+          path: |
+            results/iPhone8Result.xcresult
+            results/iPhone11Result.xcresult
+            results/iPhone13Result.xcresult
+            results/iPad8Result.xcresult
+            results/iPadMiniResult.xcresult
+        if: success() || failure()
