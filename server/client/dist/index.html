@@ -9,12 +9,12 @@
         <link rel="manifest" href="/site.webmanifest">
         <title>iOS Haptics Test Platform</title>
         <script src="https://accounts.google.com/gsi/client" async defer></script>
-        <script src="assets/jwt-decode.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/jwt-decode@2.2.0/build/jwt-decode.min.js"></script>
         
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
         <script src="//cdnjs.cloudflare.com/ajax/libs/react/17.0.2/umd/react.production.min.js"></script>
         <script src="//cdnjs.cloudflare.com/ajax/libs/react-dom/17.0.2/umd/react-dom.production.min.js"></script>
-        <script src="//unpkg.com/react-jsonschema-form@1.0.6/dist/react-jsonschema-form.js"></script>
+        <script src="//unpkg.com/@rjsf/core@4.2.3/dist/react-jsonschema-form.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <link rel="stylesheet" href="assets/corestyle.css" />
         <script src="assets/server.js"></script>
@@ -214,7 +214,7 @@
   
         
 
-        <button id="add_button" class="button-24" style="float: right; margin: 10px; margin-top: -10px; display:none ;" onclick="openModal(); ">+</button>
+        <button id="add_button" class="button-24" style="float: right; margin: 10px; margin-top: -10px;" onclick="openModal(); ">+</button>
         <div id="root" class="center" ></div>
         <div id="myModal" class="modal">
             <div class="modal-content">
