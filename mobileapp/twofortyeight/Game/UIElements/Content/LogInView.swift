@@ -19,7 +19,7 @@ struct LogInView: View {
         self._userId=State(initialValue: viewModel.userId)
     
     }
-    
+
 	var body: some View {
 		VStack(alignment: .center, spacing: 20) {
 			HeaderBarTitle(title: "2048 HAPTICS GAME", size: 20)
@@ -88,10 +88,19 @@ struct LogInView: View {
 			.cornerRadius(8)
 			
 			Button(action: {
+                self.viewModel.experimentId = ""
+                self.viewModel.userId = ""
+                self.viewModel.config_id = ""
+                self.viewModel.configuration?.getConfig(develop_env: develop_env)
+                //self.viewModel.configuration?.JSONconfig?.surveyURL = skip_url
+                
 				self.viewModel.reset()
 				self.viewModel.skipGame = true
 				self.showLogin = false
+                //self.showLogin = true
                 self.viewModel.MAX_SCORE=64;
+
+
 			}) {
 				Text("Skip >>")
 			}

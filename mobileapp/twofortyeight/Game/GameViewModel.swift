@@ -284,7 +284,7 @@ class Configuration {
     let config_id: String
     let downloadCondition: NSCondition
     private var reconnect_num=0;
-    private let MAX_RETRY_NUM = 2;
+    private let MAX_RETRY_NUM = 4; //changed from 2
     private let secondsToDelay=5.0;
     var startGameButtonActive=true;
     
