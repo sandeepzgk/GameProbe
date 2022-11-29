@@ -2,11 +2,12 @@ import SwiftUI
 
 extension Color {
     static var gameBackground: Color {
-        .init(red: 251/255, green: 248/255, blue: 240/255)
+        .init(red: 251/255, green: 250/255, blue: 240/255)
+
     }
 
     static var boardBackground: Color {
-        .init(red: 183/255, green: 173/255, blue: 162/255)
+        .init(red: 182/255, green: 171/255, blue: 160/255)
     }
 
     static var white40: Color {
@@ -55,5 +56,13 @@ extension Color {
     
     static var customYellow: Color {
         .init(red: 224/255, green: 196/255, blue: 95/255)
+    }
+    
+    static var customPurple: Color {
+        .init(red: 168/255, green: 46/255, blue: 172/255)
+    }
+    
+    static var customGolden: UIColor {
+        .init(red: 212/255, green: 175/255, blue: 55/255, alpha:1)
     }
 }
