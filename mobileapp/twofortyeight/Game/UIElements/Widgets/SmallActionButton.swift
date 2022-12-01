@@ -7,10 +7,12 @@ struct SmallActionButton: View {
     var body: some View {
         Button(action: action) {
             Text(title)
-                .font(.system(size: 19, weight: .black, design: .rounded))
-                .padding(.horizontal, 20)
-                .padding(.vertical, 9)
-                .background(enabled ? Color.orange : Color(UIColor.orange.withAlphaComponent(0.5)))
+                .font(.system(size: 21, weight: .black, design: .rounded))
+//                .padding(.horizontal, 20)
+                .padding(.horizontal, 16)
+                .padding(.vertical, 8)
+//                .background(enabled ? Color.orange : Color(UIColor.orange.withAlphaComponent(0.5)))
+                .background(enabled ? Color(Color.customGolden) : Color(Color.customGolden.withAlphaComponent(0.5)))
                 .foregroundColor(enabled ? Color.white : Color(UIColor.white.withAlphaComponent(0.5)))
                 .cornerRadius(4)
             }.disabled(!enabled)

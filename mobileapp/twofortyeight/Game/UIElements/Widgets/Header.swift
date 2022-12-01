@@ -13,12 +13,12 @@ struct Header: View {
         HStack(alignment: .top) {
             YellowBlock()
             HStack(alignment: .top) {
-                VStack(alignment: .center, spacing: 10) {
+                VStack(alignment: .center, spacing: 12) {
                     ScoreBox(title: scoreLabel, score:score)
                     SmallActionButton(title: "HELP", action: self.menuAction, enabled: true)
                         .accessibility(identifier: "menuButton")
                 }
-                VStack(alignment: .center, spacing: 10) {
+                VStack(alignment: .center, spacing: 12) {
                     ScoreBox(title: bestScoreLabel, score: bestScore)
                     SmallActionButton(title: "UNDO", action: self.undoAction, enabled: undoEnabled)
                     .accessibility(identifier: "undoButton")

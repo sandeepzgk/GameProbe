@@ -16,7 +16,8 @@ struct HeaderBarTitle: View {
                 .shadow(radius: 1)
         }
         .frame(maxWidth: .infinity, maxHeight: 100, alignment: .center)
-        .background(Color.customYellow)
+        .background(Color.customPurple)
+        //.background(Color.customYellow)
     }
 }
 

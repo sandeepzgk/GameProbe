@@ -29,7 +29,8 @@ struct GameEntry: View {
 			else if viewModel.isGameOver {
                 let surveyScoreParams = String("?move_count=") + String(self.viewModel.numberOfMoves) + String("&finish_score=") + String(self.viewModel.state.score)
                 let surveyExpPartIDParams = String("&actual_exp_id=") + String(self.viewModel.config_id!) +  String("&actual_part_id=") + String(self.viewModel.userId)
-                let surveyLink = ((self.viewModel.configuration?.JSONconfig!.surveyURL)!) + String(surveyScoreParams)  + String(surveyExpPartIDParams)
+                //let surveyLink = ((self.viewModel.configuration?.JSONconfig!.surveyURL)!) + String(surveyScoreParams)  + String(surveyExpPartIDParams)
+                let surveyLink = (self.viewModel.skipGame) ? "https://sites.usc.edu/culbertson/" : ((self.viewModel.configuration?.JSONconfig!.surveyURL)!) + String(surveyScoreParams)  + String(surveyExpPartIDParams)
                 if #available(iOS 14.0, *) {
                     GameOverView(score: self.viewModel.state.score, moves: self.viewModel.numberOfMoves, surveyLink: surveyLink, skipGame: !self.viewModel.GameStart) {
                         showLogin=true

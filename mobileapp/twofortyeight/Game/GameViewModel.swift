@@ -284,7 +284,7 @@ class Configuration {
     let config_id: String
     let downloadCondition: NSCondition
     private var reconnect_num=0;
-    private let MAX_RETRY_NUM = 2;
+    private let MAX_RETRY_NUM = 4; //changed from 2
     private let secondsToDelay=5.0;
     var startGameButtonActive=true;
     
@@ -314,13 +314,37 @@ class Configuration {
 //        }
     }
     
+    func checkHeartbeat() {
+        print("starting heartbeat call!");
+        let url = URL(string: "https://3s636biw5i.execute-api.us-east-1.amazonaws.com/heartbeat")! // prod env
+        var request = URLRequest(url: url)
+        let bodyData = try? JSONSerialization.data(
+            withJSONObject: [],
+            options: []
+        )
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = bodyData
+        let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
+            let httpResponse = response as? HTTPURLResponse
+            if (httpResponse?.statusCode == 200){
+                print("heartbeat call was made successfully!");
+            }
+            else {
+                //self.errorMsg = "checkHeartbeat() error!";
+                print("heartbeat call error!");
+            }
+        }
+        task.resume();
+    }
+    
     typealias ConfigArray = [ConfigBody]
     func getConfig(develop_env:Bool) {
         print("develop env: ",develop_env);
         var url = URL(string: "https://3s636biw5i.execute-api.us-east-1.amazonaws.com/getById")! // prod env
         if(develop_env){
             url = URL(string: "https://t8fqmzvdd7.execute-api.us-east-1.amazonaws.com/getById")! // dev env
-            
+
         }
         print(url);
         var request = URLRequest(url: url)

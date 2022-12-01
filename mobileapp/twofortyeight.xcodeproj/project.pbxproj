@@ -458,7 +458,7 @@
 			attributes = {
 				LastSwiftUpdateCheck = 1100;
 				LastUpgradeCheck = 1330;
-				ORGANIZATIONNAME = "Carlos Corrêa";
+				ORGANIZATIONNAME = "";
 				TargetAttributes = {
 					EBC999C72325932E006BA2E7 = {
 						CreatedOnToolsVersion = 11.0;
@@ -735,18 +735,18 @@
 		EBC999F323259331006BA2E7 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIconNew;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "twofortyeight/Preview\\ Content";
-				DEVELOPMENT_TEAM = WMZ566PMDQ;
+				DEVELOPMENT_TEAM = X7A6S8T5VC;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = twofortyeight/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.ccorrea.twofortyeight;
+				PRODUCT_BUNDLE_IDENTIFIER = edu.usc.harvilab.2048;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
@@ -757,18 +757,18 @@
 		EBC999F423259331006BA2E7 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIconNew;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "twofortyeight/Preview\\ Content";
-				DEVELOPMENT_TEAM = WMZ566PMDQ;
+				DEVELOPMENT_TEAM = X7A6S8T5VC;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = twofortyeight/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.ccorrea.twofortyeight;
+				PRODUCT_BUNDLE_IDENTIFIER = edu.usc.harvilab.2048;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
@@ -783,14 +783,14 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = WMZ566PMDQ;
+				DEVELOPMENT_TEAM = X7A6S8T5VC;
 				INFOPLIST_FILE = twofortyeightTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.ccorrea.twofortyeightTests;
+				PRODUCT_BUNDLE_IDENTIFIER = edu.usc.harvilab.2048Tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -806,14 +806,14 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = WMZ566PMDQ;
+				DEVELOPMENT_TEAM = X7A6S8T5VC;
 				INFOPLIST_FILE = twofortyeightTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.ccorrea.twofortyeightTests;
+				PRODUCT_BUNDLE_IDENTIFIER = edu.usc.harvilab.2048Tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -826,14 +826,14 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = WMZ566PMDQ;
+				DEVELOPMENT_TEAM = X7A6S8T5VC;
 				INFOPLIST_FILE = twofortyeightUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.ccorrea.twofortyeightUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = edu.usc.harvilab.2048UITests.xctrunner;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -853,7 +853,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.ccorrea.twofortyeightUITests.xctrunner;
+				PRODUCT_BUNDLE_IDENTIFIER = edu.usc.harvilab.2048UITests.xctrunner;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
