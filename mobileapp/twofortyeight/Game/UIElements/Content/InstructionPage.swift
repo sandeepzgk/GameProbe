@@ -13,7 +13,6 @@ struct InstructionPage: View {
     @Binding var showInstruction:Bool
     var viewModel:GameViewModel
     let user_instructions: String
-    let url:URL
     @State private var buttonDisabled = true
     var body: some View {
         VStack(spacing: 0) {
@@ -26,7 +25,7 @@ struct InstructionPage: View {
 //            }
             
             
-            Image(uiImage: UIImage(contentsOfFile: url.path)!).resizable().aspectRatio(contentMode: .fit)
+            Image(uiImage: UIImage(named: "instruction_image_720")!).resizable().aspectRatio(contentMode: .fit)
             
             Text(user_instructions).font(.system(size: 25)).bold()
             

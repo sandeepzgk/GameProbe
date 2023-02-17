@@ -17,17 +17,11 @@ struct ConsentPage: View {
     
     let instructions: String
     let user_agreements: [String]
-    let url: URL
 	
 	var body: some View {
 		VStack() {
 			HeaderBarTitle(title: "GAME AGREEMENT", size: 20)
 			
-//			URLImage(url) { image in
-//				image
-//					.resizable()
-//					.aspectRatio(contentMode: .fit)
-//			}
             ConsentAgreement(showConsent: $showConsent,showInstruction: $showInstruction, instructions: instructions, user_agreements:user_agreements)
 				.padding([.leading], 4)
 		}
